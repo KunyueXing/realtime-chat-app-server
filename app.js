@@ -20,6 +20,12 @@ const mongoSanitize = require('express-mongo-sanitize')
 // Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
 const bodyParser = require('body-parser')
 
+const xss = require('xss')
+
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
+const session = require('cookie-session')
+
 app.use(mongoSanitize())
 
 app.use(express.json({ limit: '10kb' }))
@@ -40,5 +46,23 @@ app.use(helmet())
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
 }
+
+app.use(
+    cors({
+        origin: '*',
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE']
+    })
+)
+
+app.use(cookieParser())
+
+app.use(
+    session({
+        name: 'session',
+        keys: ['key1', 'key2'],
+        maxAge: 24 * 60 * 60 * 1000
+    })
+)
 
 module.exports = app
