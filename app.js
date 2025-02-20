@@ -35,34 +35,34 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 const limiter = rateLimit({
-    max: 3000,
-    windowMs: 60 * 60 * 1000, // max 3000 requests per hour
-    message: 'Too many requests from this IP, please try again in an hour!'
+  max: 3000,
+  windowMs: 60 * 60 * 1000, // max 3000 requests per hour
+  message: 'Too many requests from this IP, please try again in an hour!'
 })
 app.use('/api', limiter)
 
 app.use(helmet())
 
 if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'))
+  app.use(morgan('dev'))
 }
 
 app.use(
-    cors({
-        origin: '*',
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE']
-    })
+  cors({
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+  })
 )
 
 app.use(cookieParser())
 
 app.use(
-    session({
-        name: 'session',
-        keys: ['key1', 'key2'],
-        maxAge: 24 * 60 * 60 * 1000
-    })
+  session({
+    name: 'session',
+    keys: ['key1', 'key2'],
+    maxAge: 24 * 60 * 60 * 1000
+  })
 )
 
 module.exports = app
