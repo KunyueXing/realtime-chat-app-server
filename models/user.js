@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcryptjs')
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -68,9 +69,14 @@ const userSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['online', 'offline'],
+    enum: ['online', 'offline']
   } // If the user is online or not
 })
+
+// Checks if candidatePassword matches userPassword (which is a hashed password stored in the database)
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+  return await bcrypt.compare(candidatePassword, userPassword)
+}
 
 const User = new mongoose.model('User', userSchema)
 module.exports = User
