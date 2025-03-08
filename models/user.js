@@ -70,7 +70,11 @@ const userSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['online', 'offline']
-  } // If the user is online or not
+  }, // If the user is online or not
+  verified: {
+    type: Boolean,
+    default: true
+  }
 })
 
 // Checks if candidatePassword matches userPassword (which is a hashed password stored in the database)

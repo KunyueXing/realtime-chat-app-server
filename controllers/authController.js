@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 const catchAsync = require('../utils/catchAsync')
+const filterObj = require('../utils/filterObj')
 
 // Created a signed JWT.
 const signToken = (userId) => {
@@ -8,6 +9,33 @@ const signToken = (userId) => {
     expiresIn: process.env.JWT_EXPIRES_IN
   })
 }
+
+exports.register = catchAsync(async (req, res, next) => {
+  const filteredBody = filterObj(req.body, 'firstName', 'lastName', 'email', 'password')
+
+  const currUser = await User.findOne({ email: filteredBody.email })
+
+  if (currUser && currUser.verified) {
+    // Email already exists and verified
+    res.status(400).json({
+      status: 'fail',
+      message: 'User already exists'
+    })
+  } else if (currUser) {
+    // If the user exists but is not verified, send the verification email again
+  } else {
+    // Create a new user
+    const newUser = await User.create(filteredBody)
+    const token = signToken(newUser._id)
+
+    res.status(201).json({
+      status: 'success',
+      message: 'User created successfully',
+      token,
+      user_id: newUser._id
+    })
+  }
+})
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body
