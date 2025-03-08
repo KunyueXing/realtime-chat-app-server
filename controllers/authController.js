@@ -40,7 +40,7 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
   // Generate a 6-digit OTP with only digits
   const new_otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false })
 
-  const otp_expiry_time = Date().now() + 15 * 60 * 1000 // 15 minutes
+  const otp_expiry_time = Date.now() + 15 * 60 * 1000 // 15 minutes
 
   // await User.findByIdAndUpdate(userId, { otp: new_otp, otp_expiry_time })
   const currUser = await User.findByIdAndUpdate(userId, { otp_expiry_time })
@@ -110,6 +110,7 @@ exports.login = catchAsync(async (req, res, next) => {
       status: 'fail',
       message: 'Please provide both email and password'
     })
+    return
   }
 
   // Check if user exists and password is correct
@@ -121,6 +122,7 @@ exports.login = catchAsync(async (req, res, next) => {
       status: 'error',
       message: 'Incorrect email or password'
     })
+    return
   }
 
   // If everything is okay, send token to client
