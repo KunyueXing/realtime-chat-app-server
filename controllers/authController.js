@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 const catchAsync = require('../utils/catchAsync')
 const filterObj = require('../utils/filterObj')
+const otpGenerator = require('otp-generator')
 
 // Created a signed JWT.
 const signToken = (userId) => {
@@ -26,15 +27,74 @@ exports.register = catchAsync(async (req, res, next) => {
   } else {
     // Create a new user
     const newUser = await User.create(filteredBody)
-    const token = signToken(newUser._id)
 
-    res.status(201).json({
-      status: 'success',
-      message: 'User created successfully',
-      token,
-      user_id: newUser._id
+    req.userId = newUser._id
+    next()
+  }
+})
+
+// Send an OTP to the user's email
+exports.sendOTP = catchAsync(async (req, res, next) => {
+  const { userId } = req
+
+  // Generate a 6-digit OTP with only digits
+  const new_otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false })
+
+  const otp_expiry_time = Date().now() + 15 * 60 * 1000 // 15 minutes
+
+  await User.findByIdAndUpdate(userId, { otp: new_otp, otp_expiry_time })
+  console.log(new_otp)
+
+  // TODO: Send the OTP to the user's email
+
+  res.status(200).json({
+    status: 'success',
+    message: 'OTP sent successfully'
+  })
+})
+
+// Verify the OTP and update the user's verified status
+exports.verifyOTP = catchAsync(async (req, res, next) => {
+  const { email, otp } = req.body
+
+  // Search for the user with the email and the OTP expiry time is greater than the current time
+  // If OTP expired or user email doesn't exist, return null
+  const currUser = await User.findOne({ email, otp_expiry_time: { $gt: Date.now() } })
+
+  if (!currUser) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Email is invalid or OTP expired'
     })
   }
+
+  if (currUser.verified) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Email already verified'
+    })
+  }
+
+  if (!(await currUser.correctOTP(otp, currUser.otp))) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Incorrect OTP'
+    })
+  }
+
+  // When the OTP is correct, update the user's verified status
+  currUser.verified = true
+  currUser.otp = undefined
+  await currUser.save({ new: true, validateModifiedOnly: true })
+
+  const token = signToken(currUser._id)
+
+  res.status(200).json({
+    status: 'success',
+    message: 'OTP verified successfully',
+    token,
+    user_id: currUser._id
+  })
 })
 
 exports.login = catchAsync(async (req, res, next) => {
