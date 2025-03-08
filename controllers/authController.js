@@ -42,7 +42,11 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
 
   const otp_expiry_time = Date().now() + 15 * 60 * 1000 // 15 minutes
 
-  await User.findByIdAndUpdate(userId, { otp: new_otp, otp_expiry_time })
+  // await User.findByIdAndUpdate(userId, { otp: new_otp, otp_expiry_time })
+  const currUser = await User.findByIdAndUpdate(userId, { otp_expiry_time })
+  currUser.otp = new_otp.toString()
+  // Save with validation and pre-save hook
+  await currUser.save({ new: true, validateModifiedOnly: true })
   console.log(new_otp)
 
   // TODO: Send the OTP to the user's email
