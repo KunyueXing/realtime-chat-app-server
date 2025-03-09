@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -80,6 +81,12 @@ const userSchema = new mongoose.Schema({
   },
   otp_expiry_time: {
     type: Date
+  },
+  passwordResetToken: {
+    type: String
+  },
+  passwordResetExpires: {
+    type: Date
   }
 })
 
@@ -104,6 +111,19 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
 // Checks if candidateOTP matches userOTP (which is a hashed OTP stored in the database)
 userSchema.methods.correctOTP = async function (candidateOTP, userOTP) {
   return await bcrypt.compare(candidateOTP, userOTP)
+}
+
+userSchema.methods.createPasswordResetToken = function () {
+  // Generate a random token
+  const resetToken = crypto.randomBytes(32).toString('hex')
+
+  // Hash the token and store it in the database
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+
+  // Set the password reset token to expire after 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000
+
+  return resetToken
 }
 
 const User = new mongoose.model('User', userSchema)

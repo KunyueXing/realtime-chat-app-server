@@ -134,3 +134,43 @@ exports.login = catchAsync(async (req, res, next) => {
     user_id: currUser._id
   })
 })
+
+// To make sure that only users who are logged in can access certain routes
+exports.protect = catchAsync(async (req, res, next) => {})
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1 Get user based on POSTed email
+  const currUser = await User.findOne({ email: req.body.email })
+  if (!currUser) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'There is no user with email address'
+    })
+  }
+
+  // 2 Generate the random reset token
+  const resetToken = currUser.createPasswordResetToken()
+  await currUser.save({ validateBeforeSave: false })
+
+  // 3 Send it to user's email
+  try {
+    const resetURL = `http://localhost:3000/auth/new-password?token=${resetToken}`
+    console.log(resetURL)
+
+    // TODO: Send the email
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email'
+    })
+  } catch (err) {
+    currUser.passwordResetToken = undefined
+    currUser.passwordResetExpires = undefined
+    await currUser.save({ validateBeforeSave: false })
+
+    return res.status(500).json({
+      status: 'error',
+      message: 'There was an error sending the email. Try again later!'
+    })
+  }
+})
