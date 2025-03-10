@@ -81,12 +81,6 @@ const userSchema = new mongoose.Schema({
   },
   otp_expiry_time: {
     type: Date
-  },
-  passwordResetToken: {
-    type: String
-  },
-  passwordResetExpires: {
-    type: Date
   }
 })
 
@@ -105,7 +99,7 @@ userSchema.pre('save', async function (next) {
 
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified
-  if (!this.isModified('password' || !this.password)) {
+  if (!this.isModified('password') || !this.password) {
     return next()
   }
 

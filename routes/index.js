@@ -4,4 +4,4 @@ const authRouter = require('./auth')
 
 router.use('/auth', authRouter)
 
-model.exports = router
+module.exports = router
