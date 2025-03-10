@@ -11,6 +11,8 @@ const rateLimit = require('express-rate-limit')
 // For security, set HTTP response headers
 const helmet = require('helmet')
 
+const routes = require('./routes/index')
+
 /* 
   For security, sanitize user input. Searched any keys in objects that begin with 
   a $ or contain a . (reserved MongoDB operators), from req.body, req.query or req.params.
@@ -90,5 +92,7 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000 // Session duration: 24 hours
   })
 )
+
+app.use(routes)
 
 module.exports = app
