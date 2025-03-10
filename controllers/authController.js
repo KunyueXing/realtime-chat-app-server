@@ -3,6 +3,7 @@ const User = require('../models/user')
 const catchAsync = require('../utils/catchAsync')
 const filterObj = require('../utils/filterObj')
 const otpGenerator = require('otp-generator')
+const { promisify } = require('util')
 
 // Created a signed JWT.
 const signToken = (userId) => {
@@ -136,7 +137,52 @@ exports.login = catchAsync(async (req, res, next) => {
 })
 
 // To make sure that only users who are logged in can access certain routes
-exports.protect = catchAsync(async (req, res, next) => {})
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1 Getting token and check if it's there
+  let token
+
+  // Usually, the JWT token was sent to the server by using Bearer Authentication
+  // There's another way to send the JWT token to the server, which is by using cookies
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1]
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt
+  }
+
+  if (!token) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'You are not logged in! Please log in to get access.'
+    })
+  }
+
+  // 2 Verification token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+  console.log(decoded)
+
+  // 3 Check if user still exists
+  const currUser = await User.findById(decoded.userId)
+
+  if (!currUser) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'The user belonging to this token does no longer exist.'
+    })
+  }
+
+  // 4 Check if user changed password after the token was issued
+  // iat - timestamp that the token was issued at
+  if (currUser.changedPasswordAfter(decoded.iat)) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'User recently changed password! Please log in again.'
+    })
+  }
+
+  // Grant access to protected route
+  req.user = currUser
+  next()
+})
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1 Get user based on POSTed email
@@ -173,4 +219,39 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       message: 'There was an error sending the email. Try again later!'
     })
   }
+})
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  // 1 Get user based on the token
+  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+
+  const currUser = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() }
+  })
+
+  // 2 If token has not expired, and there is user, set the new password
+  if (!currUser) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Token is invalid or has expired'
+    })
+  }
+
+  // 3 Update passward reset related properties for the user
+  currUser.password = req.body.password
+  currUser.passwordConfirm = req.body.password
+  currUser.passwordResetToken = undefined
+  currUser.passwordResetExpires = undefined
+  await currUser.save()
+
+  // TODO: Send the email to user that the password has been changed
+
+  // 4 Log the user in, send JWT
+  const token = signToken(currUser._id)
+  res.status(200).json({
+    status: 'success',
+    message: 'Password reset successful',
+    token
+  })
 })
