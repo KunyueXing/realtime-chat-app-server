@@ -1,21 +1,25 @@
-const sgMail = require('@sendgrid/mail')
+const mailgun = require('mailgun.js')
+const dotenv = require('dotenv')
+dotenv.config({ path: '../config.env' })
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const mg = mailgun({
+  apiKey: process.env.MAILGUN_API_KEY,
+  domain: process.env.MAILGUN_DOMAIN
+})
 
-const sendSGEmail = async ({ to, sender, subject, html, attachments, text }) => {
+const sendMailgunEmail = async ({ to, subject, text, otp }) => {
   try {
-    const from = sender || process.env.EMAIL_FROM
-    const msg = {
+    const sender = process.env.EMAIL_FROM
+
+    const data = {
+      from: `ChatElephant App <no-reply@${sender}>`,
       to: to,
-      from: from,
       subject: subject,
-      html: html,
-      text: text,
-      attachments
+      text: `${text}, the one time password for ${subject} is ${otp}`
     }
 
-    // Send the email. This is asynchronous, so it returns a promise
-    return sgMail.send(msg)
+    await mg.messages.create(process.env.MAILGUN_DOMAIN, data)
+    console.log(data)
   } catch (error) {
     console.log(error)
   }
@@ -26,9 +30,8 @@ exports.sendEmail = async (args) => {
   // instead of sending the email. This is useful for testing purposes
   if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
     console.log(args)
-
     return Promise.resolve()
   } else {
-    return sendSGEmail(args)
+    return sendMailgunEmail(args)
   }
 }
