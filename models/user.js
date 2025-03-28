@@ -45,7 +45,8 @@ const userSchema = new mongoose.Schema({
         return el === this.password
       },
       message: 'Passwords are not the same!'
-    }
+    },
+    select: false // This prevents the field from being stored in the database
   },
   // The time at which the password was changed. Used for JWT creation
   // If the password was changed after the JWT was issued, the user must log in again
