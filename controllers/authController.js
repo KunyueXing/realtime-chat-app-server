@@ -226,6 +226,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // 2 Generate the random reset token
   const resetToken = currUser.createPasswordResetToken()
+  console.log('resetToken: ', resetToken)
   await currUser.save({ validateBeforeSave: false })
 
   // 3 Send it to user's email
@@ -260,7 +261,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // 1 Get user based on the token
-  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+  // req.params.token → the token in the URL path (e.g., /resetPassword/:token).
+  // req.body.token → the token in the request body (e.g., { token: '...token...' }).
+  const hashedToken = crypto.createHash('sha256').update(req.body.token).digest('hex')
 
   const currUser = await User.findOne({
     passwordResetToken: hashedToken,
