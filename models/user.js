@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema({
   }, // If the user is online or not
   verified: {
     type: Boolean,
-    default: true
+    default: false
   },
   otp: {
     type: String

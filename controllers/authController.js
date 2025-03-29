@@ -4,6 +4,8 @@ const catchAsync = require('../utils/catchAsync')
 const filterObj = require('../utils/filterObj')
 const otpGenerator = require('otp-generator')
 const { promisify } = require('util')
+const mailService = require('../services/mailer')
+const crypto = require('crypto')
 
 // Created a signed JWT.
 const signToken = (userId) => {
@@ -13,7 +15,7 @@ const signToken = (userId) => {
 }
 
 exports.register = catchAsync(async (req, res, next) => {
-  const filteredBody = filterObj(req.body, 'firstName', 'lastName', 'email', 'password')
+  const filteredBody = filterObj(req.body, 'firstName', 'lastName', 'email', 'password', 'passwordConfirm')
 
   const currUser = await User.findOne({ email: filteredBody.email })
 
@@ -25,6 +27,13 @@ exports.register = catchAsync(async (req, res, next) => {
     })
   } else if (currUser) {
     // If the user exists but is not verified, send the verification email again
+    await User.findByIdAndUpdate(currUser._id, filteredBody, {
+      new: true,
+      validateModifiedOnly: true
+    })
+
+    req.userId = currUser._id
+    next()
   } else {
     // Create a new user
     const newUser = await User.create(filteredBody)
@@ -41,7 +50,7 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
   // Generate a 6-digit OTP with only digits
   const new_otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false })
 
-  const otp_expiry_time = Date.now() + 15 * 60 * 1000 // 15 minutes
+  const otp_expiry_time = Date.now() + 10 * 60 * 1000 // 10 minutes
 
   // await User.findByIdAndUpdate(userId, { otp: new_otp, otp_expiry_time })
   const currUser = await User.findByIdAndUpdate(userId, { otp_expiry_time })
@@ -51,11 +60,30 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
   console.log(new_otp)
 
   // TODO: Send the OTP to the user's email
+  mailService
+    .sendEmail({
+      to: currUser.email,
+      subject: 'Email Verification for ChatElephant',
+      content: 'Congratulations! You are almost set to start using ChatElephant.',
+      html: '',
+      otp: new_otp
+    })
+    .then(() => {
+      console.log('Email sent successfully')
 
-  res.status(200).json({
-    status: 'success',
-    message: 'OTP sent successfully'
-  })
+      res.status(200).json({
+        status: 'success',
+        message: 'OTP sent successfully'
+      })
+    })
+    .catch((err) => {
+      console.log(err)
+
+      res.status(500).json({
+        status: 'error',
+        message: 'There was an error sending the verification email. Try again later!'
+      })
+    })
 })
 
 // Verify the OTP and update the user's verified status
@@ -113,6 +141,8 @@ exports.login = catchAsync(async (req, res, next) => {
     })
     return
   }
+
+  // TODO: Check if email is verified. If not, send the verification email again
 
   // Check if user exists and password is correct
   const currUser = await User.findOne({ email: email }).select('+password')
@@ -204,6 +234,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     console.log(resetURL)
 
     // TODO: Send the email
+    mailService.sendEmail({
+      to: currUser.email,
+      subject: 'Your password reset token (valid for 10 min)',
+      content: `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.`,
+      html: `<p>Forgot your password? Click <a href="${resetURL}">here</a> to reset your password. The link is valid for 10 minutes.</p>`,
+      otp: resetToken
+    })
 
     res.status(200).json({
       status: 'success',
