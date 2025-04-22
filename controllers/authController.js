@@ -6,7 +6,7 @@ const otpGenerator = require('otp-generator')
 const { promisify } = require('util')
 const mailService = require('../services/mailer')
 const crypto = require('crypto')
-
+const resetPassword = require('../Templates/Mail/resetPassword')
 // Created a signed JWT.
 const signToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -237,9 +237,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     // TODO: Send the email
     mailService.sendEmail({
       to: currUser.email,
-      subject: 'Your password reset token (valid for 10 min)',
+      subject: 'Reset Password',
       content: `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.`,
-      html: `<p>Forgot your password? Click <a href="${resetURL}">here</a> to reset your password. The link is valid for 10 minutes.</p>`,
+      html: resetPassword(currUser.firstName, resetURL),
       otp: resetToken
     })
 
