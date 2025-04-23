@@ -77,7 +77,7 @@ app.use(
     credentials: true, // Allow cookies and other credentials to be sent in cross-origin requests.
 
     // Specifies the HTTP methods that are allowed to be used when making requests to the server
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
   })
 )
 
