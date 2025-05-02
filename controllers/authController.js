@@ -88,16 +88,17 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
 
 // Verify the OTP and update the user's verified status
 exports.verifyOTP = catchAsync(async (req, res, next) => {
-  const { email, otp } = req.body
+  const email = req.body.email.trim().toLowerCase()
+  const otp = req.body.otp
+  // console.log('Verifying email:', email)
 
-  // Search for the user with the email and the OTP expiry time is greater than the current time
-  // If OTP expired or user email doesn't exist, return null
-  const currUser = await User.findOne({ email, otp_expiry_time: { $gt: Date.now() } })
+  // Search for the user with the email
+  const currUser = await User.findOne({ email })
 
   if (!currUser) {
     return res.status(400).json({
       status: 'fail',
-      message: 'Email is invalid or OTP expired'
+      message: 'Email is invalid'
     })
   }
 
@@ -105,6 +106,13 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
     return res.status(400).json({
       status: 'error',
       message: 'Email already verified'
+    })
+  }
+
+  if (currUser.otp_expiry_time < Date.now()) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'OTP expired'
     })
   }
 
@@ -117,8 +125,15 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
 
   // When the OTP is correct, update the user's verified status
   currUser.verified = true
-  currUser.otp = undefined
-  await currUser.save({ new: true, validateModifiedOnly: true })
+  currUser.otp = null
+  await currUser.save({ validateModifiedOnly: true })
+
+  // Check if can read data from the database
+  // const allUsers = await User.find({})
+  // console.log(
+  //   'All users in DB:',
+  //   allUsers.map((u) => u.email)
+  // )
 
   const token = signToken(currUser._id)
 
