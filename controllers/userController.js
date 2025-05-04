@@ -71,3 +71,25 @@ exports.getUsers = catchAsync(async (req, res, next) => {
     message: 'Users that are not friends fetched successfully'
   })
 })
+
+// Get all users that are friends with the current user
+exports.getFriends = catchAsync(async (req, res, next) => {
+  const friends_list = await User.findById(req.user._id).populate('friends', 'firstName lastName _id')
+
+  res.status(200).json({
+    status: 'success',
+    data: friends_list,
+    message: 'Users that are friends fetched successfully'
+  })
+})
+
+// Get all friend requests sent to the current user
+exports.getFriendRequests = catchAsync(async (req, res, next) => {
+  const friend_requests = await FriendRequest.find({ receiver: req.user._id }).populate('sender', 'firstName lastName _id')
+
+  res.status(200).json({
+    status: 'success',
+    data: friend_requests,
+    message: 'Friend requests fetched successfully'
+  })
+})

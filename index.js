@@ -68,8 +68,8 @@ io.on('connection', async (socket) => {
   const user_id = socket.handshake.query['user_id']
   console.log(`User with id ${user_id} connected, socket id: ${socket.id}`)
 
-  // If the user_id is not null and can be converted to a true boolean (truthy, e,g. not empty 
-  // string, not 0, not false, not undefined, not NaN, not null), then update the user's socketId 
+  // If the user_id is not null and can be converted to a true boolean (truthy, e,g. not empty
+  // string, not 0, not false, not undefined, not NaN, not null), then update the user's socketId
   // in the database
   if (user_id != null && Boolean(user_id)) {
     try {
