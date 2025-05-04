@@ -158,7 +158,7 @@ userSchema.methods.createPasswordResetToken = function () {
 }
 
 // Check if the user changed the password after the JWT was issued
-userSchema.methods.passwordChangedAfter = function (JWTTimestamp) {
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10)
 
