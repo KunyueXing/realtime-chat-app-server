@@ -64,7 +64,7 @@ server.listen(port, () => {
 
 // Listen for when a user connects to the server via socket
 io.on('connection', async (socket) => {
-  console.log(JSON.stringify(socket.handshake.query))
+  console.log('user connection: ', JSON.stringify(socket.handshake.query))
   const user_id = socket.handshake.query['user_id']
   console.log(`User with id ${user_id} connected, socket id: ${socket.id}`)
 

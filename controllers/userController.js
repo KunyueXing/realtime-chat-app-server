@@ -64,21 +64,59 @@ exports.getUsers = catchAsync(async (req, res, next) => {
     return true
   })
 
+  // For testing purposes
+  // const not_friends_users = [
+  //   {
+  //     firstName: 'Jenny',
+  //     lastName: 'Li',
+  //     _id: 'sdkfjl;kdsjalkjsa;fj',
+  //     avatar: 'lksdjafklsj;dkfjsa;',
+  //     online: true
+  //   },
+  //   {
+  //     firstName: 'Ben',
+  //     lastName: 'Ma',
+  //     _id: 'sdkfjl;kdsjalsa;fj',
+  //     avatar: 'lksdjafklsj;dkfjsa;',
+  //     online: true
+  //   }
+  // ]
+  console.log('Not friends users:', not_friends_users)
+
   // 3) Send response
   res.status(200).json({
     status: 'success',
-    data: not_friends_users,
+    users: not_friends_users,
     message: 'Users that are not friends fetched successfully'
   })
 })
 
 // Get all users that are friends with the current user
 exports.getFriends = catchAsync(async (req, res, next) => {
-  const friends_list = await User.findById(req.user._id).populate('friends', 'firstName lastName _id')
+  const curr_user = await User.findById(req.user._id).populate('friends', 'firstName lastName _id')
+
+  // For testing purposes
+  // const friends_list = [
+  //   {
+  //     firstName: 'Jenny',
+  //     lastName: 'Li',
+  //     _id: 'sdkfjl;kdsjalkjsa;fj',
+  //     avatar: 'lksdjafklsj;dkfjsa;',
+  //     online: true
+  //   },
+  //   {
+  //     firstName: 'Ben',
+  //     lastName: 'Ma',
+  //     _id: 'sdkfjl;kdsjalsa;fj',
+  //     avatar: 'lksdjafklsj;dkfjsa;',
+  //     online: true
+  //   }
+  // ]
+  console.log('friends users:', friends_list)
 
   res.status(200).json({
     status: 'success',
-    data: friends_list,
+    users: curr_user.friends,
     message: 'Users that are friends fetched successfully'
   })
 })
@@ -87,9 +125,27 @@ exports.getFriends = catchAsync(async (req, res, next) => {
 exports.getFriendRequests = catchAsync(async (req, res, next) => {
   const friend_requests = await FriendRequest.find({ receiver: req.user._id }).populate('sender', 'firstName lastName _id')
 
+  // For testing purposes
+  // const friend_requests = [
+  //   {
+  //     firstName: 'Jenny',
+  //     lastName: 'Li',
+  //     _id: 'sdkfjl;kdsjalkjsa;fj',
+  //     avatar: 'lksdjafklsj;dkfjsa;',
+  //     online: true
+  //   },
+  //   {
+  //     firstName: 'Ben',
+  //     lastName: 'Ma',
+  //     _id: 'sdkfjl;kdsjalsa;fj',
+  //     avatar: 'lksdjafklsj;dkfjsa;',
+  //     online: true
+  //   }
+  // ]
+
   res.status(200).json({
     status: 'success',
-    data: friend_requests,
+    users: friend_requests,
     message: 'Friend requests fetched successfully'
   })
 })
