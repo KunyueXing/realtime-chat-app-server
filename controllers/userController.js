@@ -112,7 +112,7 @@ exports.getFriends = catchAsync(async (req, res, next) => {
   //     online: true
   //   }
   // ]
-  console.log('friends users:', friends_list)
+  console.log('friends users:', curr_user.friends)
 
   res.status(200).json({
     status: 'success',
@@ -142,6 +142,7 @@ exports.getFriendRequests = catchAsync(async (req, res, next) => {
   //     online: true
   //   }
   // ]
+  console.log('friend requests:', friend_requests)
 
   res.status(200).json({
     status: 'success',
