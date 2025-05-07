@@ -28,6 +28,7 @@ module.exports = async (socket, io) => {
       socketId: null,
       status: 'offline'
     })
+    socket.disconnect()
     console.log(`User with id ${user_id} disconnected, socket id: ${socket.id}`)
   })
 }
