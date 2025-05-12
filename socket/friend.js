@@ -81,4 +81,29 @@ module.exports = async (socket, io) => {
       console.error('Error sending friend request accepted to sender:', error)
     }
   })
+
+  socket.on('reject_friend_request', async (data) => {
+    console.log('Friend request rejected:', data)
+
+    try {
+      const friendRequest = await FriendRequest.findById(data.request_id)
+
+      if (!friendRequest) {
+        console.error('Friend request not found for rejection')
+        return
+      }
+
+      const receiver = await User.findById(friendRequest.receiver)
+      const sender = await User.findById(friendRequest.sender)
+
+      await FriendRequest.findByIdAndDelete(data.request_id)
+      io.to(receiver?.socketId).emit('friend_request_rejected', {
+        message: 'Your have rejected friend request'
+      })
+
+      console.log('Friend request rejected and deleted')
+    } catch (error) {
+      console.error('Error rejecting friend request:', error)
+    }
+  })
 }
