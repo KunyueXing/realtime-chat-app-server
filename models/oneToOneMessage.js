@@ -1,12 +1,17 @@
 const mongoose = require('mongoose')
 
 const oneToOneMessageSchema = new mongoose.Schema({
+  // there're two participants in a one-to-one chat, the sender and the receiver
   participants: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
   ],
+  isPinned: {
+    type: Boolean,
+    default: false
+  },
   messages: [
     {
       sender: {
@@ -35,11 +40,11 @@ const oneToOneMessageSchema = new mongoose.Schema({
       isRead: {
         type: Boolean,
         default: false
-      },
-      isDeleted: {
-        type: Boolean,
-        default: false
       }
+      // isDeleted: {
+      //   type: Boolean,
+      //   default: false
+      // }
     }
   ]
 })
