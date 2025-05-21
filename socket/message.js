@@ -87,4 +87,31 @@ modeule.exports = async (socket, io) => {
       })
     }
   })
+
+  // Start a new conversation between two users
+  socket.on('start_conversation', async (data) => {
+    console.log('Start conversation:', data)
+
+    const { sender, receiver } = data
+
+    // check if the conversation already exists
+    const existingChat = await OneToOneMessage.find({
+      participants: { $size: 2, $all: [sender, receiver] }
+    }).populate('participants', 'fistName lastName avatar _id email status')
+
+    if (existingChat) {
+      console.log('Conversation already exists:', existingChat)
+      socket.emit('start_chat', existingChat[0])
+    } else {
+      // if the conversation does not exist, create a new conversation
+      // emit the new conversation to the sender and receiver
+      console.log('No conversation found, creating new conversation')
+      let newChat = new OneToOneMessage.create({
+        participants: [sender, receiver]
+      })
+      newChat = await OneToOneMessage.findById(newChat).populate('participants', 'fistName lastName avatar _id email status')
+
+      socket.emit('start_chat', newChat)
+    }
+  })
 }
