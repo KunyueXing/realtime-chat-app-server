@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const OneToOneMessage = require('../models/oneToOneMessage')
 const path = require('path')
+const { create } = require('../models/friendRequest')
 
 modeule.exports = async (socket, io) => {
   // handle incoming text/link messages
@@ -16,7 +17,8 @@ modeule.exports = async (socket, io) => {
       sender: senderUser._id,
       receiver: receiverUser._id,
       type,
-      content
+      content,
+      createdAt: Date.now()
     }
 
     // fetch the chat between the sender and receiver
@@ -38,13 +40,13 @@ modeule.exports = async (socket, io) => {
       // emit incoming message to the receiver
       io.to(receiverUser?.socketId).emit('new_message', {
         message: new_message,
-        conversation_id: conversation_id
+        conversation_id
       })
 
       // emit outgoing message to the sender
       io.to(senderUser?.socketId).emit('new_message', {
         message: new_message,
-        conversation_id: conversation_id
+        conversation_id
       })
     } catch (error) {
       console.error('Error emiting messages to sender / receiver', error)
@@ -112,6 +114,35 @@ modeule.exports = async (socket, io) => {
       newChat = await OneToOneMessage.findById(newChat).populate('participants', 'fistName lastName avatar _id email status')
 
       socket.emit('start_chat', newChat)
+    }
+  })
+
+  // get messages from a specific conversation
+  socket.on('get_messages', async ({ conversation_id }, callback) => {
+    try {
+      // Fetch messages from the database using the conversation_id
+      // Populate the sender and receiver fields with user details
+      const messages = await OneToOneMessage.findById(conversation_id)
+        .populate('messages.sender', 'firstName lastName avatar _id status')
+        .populate('messages.receiver', 'firstName lastName avatar _id status')
+
+      if (messages) {
+        callback({
+          status: 'success',
+          data: messages.messages
+        })
+      } else {
+        callback({
+          status: 'failure',
+          message: 'No messages found'
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching messages from database:', error)
+      callback({
+        status: 'error',
+        message: 'Error fetching messages'
+      })
     }
   })
 }
