@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const friendHandler = require('./friend')
+const oneToOneMsgHandler = require('./message')
 
 module.exports = async (socket, io) => {
   console.log('user connection: ', JSON.stringify(socket.handshake.query))
@@ -23,6 +24,7 @@ module.exports = async (socket, io) => {
 
   // TODO: Handlers for socket events
   friendHandler(socket, io)
+  oneToOneMsgHandler(socket, io)
 
   socket.on('disconnect', async () => {
     // Update the user's socketId and status in the database

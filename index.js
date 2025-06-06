@@ -3,8 +3,6 @@
 const app = require('./app')
 
 const mongoose = require('mongoose')
-const User = require('./models/user')
-const FriendRequest = require('./models/friendRequest')
 
 // Import the dotenv package to read the .env file and store the environment variables in process.env
 const dotenv = require('dotenv')

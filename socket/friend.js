@@ -94,7 +94,6 @@ module.exports = async (socket, io) => {
       }
 
       const receiver = await User.findById(friendRequest.receiver)
-      const sender = await User.findById(friendRequest.sender)
 
       await FriendRequest.findByIdAndDelete(data.request_id)
       io.to(receiver?.socketId).emit('friend_request_rejected', {

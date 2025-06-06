@@ -1,9 +1,7 @@
 const User = require('../models/user')
 const OneToOneMessage = require('../models/oneToOneMessage')
-const path = require('path')
-const { create } = require('../models/friendRequest')
 
-modeule.exports = async (socket, io) => {
+module.exports = async (socket, io) => {
   // handle incoming text/link messages
   socket.on('text_message', async (data) => {
     console.log('Received text/link message:', data)

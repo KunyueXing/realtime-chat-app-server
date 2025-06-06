@@ -29,7 +29,7 @@ const oneToOneMessageSchema = new mongoose.Schema({
       },
       createdAt: {
         type: Date,
-        // Passes the function reference to Mongoose, which calls Date.now() each time a 
+        // Passes the function reference to Mongoose, which calls Date.now() each time a
         // message is created, as intended. Don't call Date.now() directly here, as it would
         // set the same timestamp for all messages created at the same time.
         default: Date.now
