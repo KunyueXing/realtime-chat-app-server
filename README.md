@@ -31,9 +31,25 @@
 * Media uploads via AWS S3
 
 ## Tech Stack / Dependencies
-* Runtime & language: Node.js, Express.js
-* Database: MongoDB + AWS S3 (file storage)
-* Real-time: Socket.IO
+* Runtime & Framework: Node.js, Express.js
+* Database:
+  * MongoDB (Compass for GUI) - NoSQL database to store user profiles, chats, messages, and other structured data
+  * Mongoose - Object Data Modeling (ODM) for MongoDB
+  * AWS S3 - file storage
+* Real-time Communication: Socket.IO
+* Authentication & Authorization:
+  * jsonwebtoken (JWT) – Secure token-based user authentication
+  * cookie-parser & cookie-session – Parse and manage cookies for session handling
+  * bcryptjs – Password hashing and verification
+  * otp-generator – Generate OTPs for verification flows (e.g., email/phone verification)
+* Email Service:
+  * SendGrid – Transactional email delivery for signup verification, password reset, etc.
+* Environment & Utilities:
+	 * dotenv – Manage environment variables
+  * cors – Enable/disable cross-origin requests
+  * morgan – HTTP request logger middleware for debugging and monitoring
+  * nodemon – Auto-restarts server during development
+* Audio / Video Services
 * optional: Docker, AWS EC2, Kubernetes
 
 ## Architecture Overview
@@ -210,8 +226,26 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
   ### API testing instructions (e.g. via Postman)
   ### How to test chat messages
 ## Security Notes
-  * JWT authentication
-  * HTTPS usage
+* Security Headers
+    * Helmet -- Sets various HTTP headers to protect against well-known web vulnerabilities (e.g., clickjacking, MIME sniffing, etc.)
+* Rate Limiting & Request Control
+    * express-rate-limit – Throttle repeated requests to public APIs and endpoints to prevent brute-force attacks
+* Input Sanitization & XSS Protection
+    * express-mongo-sanitize – Prevents NoSQL injection by removing prohibited characters in MongoDB queries
+    * xss – Sanitizes user input to prevent Cross-site scripting (XSS) attacks
+* Cookie Security
+    * cookie-parser – Parses and verifies signed cookies
+    * cookie-session – Provides secure and efficient session management
+* CORS Configuration
+    * cors – Configured to allow only trusted domains and control HTTP methods and headers allowed by the server
+* Authentication & Authorization: 
+    * JWT -- to implement stateless and secure authentication.
+        * The token is then used to authenticate requests to protected routes and it was passed via authorization: Bearer <token> header (preferred)
+        * Token expiration: JWTs expire after a configurable period (e.g., 1 hour).
+        * Secure storage: tokens are stored in secure, HTTP-only cookies to mitigate XSS attacks.
+* HTTPS usage (optional)
+    * Deploy behind HTTPS (e.g., with a reverse proxy like NGINX or use AWS ALB/Cloudflare) for production
+
 ## Known Issues / Limitations
   ### Features under development
   ### Current Issues
