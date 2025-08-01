@@ -1,4 +1,11 @@
 # realtime-chat-app-server
+## Outline
+* Summary
+* Design
+  * Data Models
+  * Restful API Design
+  * Socket Events Design
+* Actions
 
 ## Design
 ### Data Model
@@ -156,7 +163,10 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
 
 
 **Notes:**
-- All media (images, files, avatars) are stored in AWS S3, with only the metadata and S3 URLs stored in MongoDB.
-- All references are MongoDB `ObjectId` types.
+- All media (images, files, videos, audios, documents, and avatars) are stored in AWS S3, with only the metadata and S3 URLs stored in MongoDB.
+- All references are MongoDB `ObjectId` types. References (`ObjectId`) are used for relations (users, chats, messages, groups, etc).
 - Timestamps (`createdAt`, `updatedAt`) are used for sorting and auditing.
 - Data models can be further normalized or denormalized based on performance and scaling requirements.
+- Embedded arrays (e.g., starred messages, group members) for fast access, but may be normalized if lists become very large.
+- Timestamps on all models to help with sorting and querying.
+- AI chat is modeled as a specific chat type or even a special chat per user.
