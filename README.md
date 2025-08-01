@@ -11,7 +11,7 @@
 * Installation & Setup
 * Deployment
 * Usage
-  * API testing instructions (e.g. via Postman)
+  * API testing instructions (via Postman)
   * How to test chat messages
 * Security Notes
   * JWT authentication
@@ -31,26 +31,29 @@
 * Media uploads via AWS S3
 
 ## Tech Stack / Dependencies
-* Runtime & Framework: Node.js, Express.js
+* Runtime & Framework:
+	* **Node.js, Express.js**
 * Database:
-  * MongoDB (Compass for GUI) - NoSQL database to store user profiles, chats, messages, and other structured data
-  * Mongoose - Object Data Modeling (ODM) for MongoDB
-  * AWS S3 - file storage
-* Real-time Communication: Socket.IO
+  * **MongoDB** (Compass for GUI) - NoSQL database to store user profiles, chats, messages, and other structured data
+  * **Mongoose** - Object Data Modeling (ODM) for MongoDB
+  * **AWS S3** - file storage
+* Real-time Communication:
+	* **Socket.IO**
 * Authentication & Authorization:
-  * jsonwebtoken (JWT) – Secure token-based user authentication
-  * cookie-parser & cookie-session – Parse and manage cookies for session handling
-  * bcryptjs – Password hashing and verification
-  * otp-generator – Generate OTPs for verification flows (e.g., email/phone verification)
+  * **jsonwebtoken (JWT)** – Secure token-based user authentication
+  * **cookie-parser & cookie-session** – Parse and manage cookies for session handling
+  * **bcryptjs** – Password hashing and verification
+  * **otp-generator** – Generate OTPs for verification flows (e.g., email/phone verification)
 * Email Service:
-  * SendGrid – Transactional email delivery for signup verification, password reset, etc.
+  * **SendGrid** – Transactional email delivery for signup verification, password reset, etc.
 * Environment & Utilities:
-	 * dotenv – Manage environment variables
-  * cors – Enable/disable cross-origin requests
-  * morgan – HTTP request logger middleware for debugging and monitoring
-  * nodemon – Auto-restarts server during development
+	* **dotenv** – Manage environment variables
+  * **cors** – Enable/disable cross-origin requests
+  * **morgan** – HTTP request logger middleware for debugging and monitoring
+  * **nodemon** – Auto-restarts server during development
 * Audio / Video Services
-* optional: Docker, AWS EC2, Kubernetes
+* optional:
+	* **Docker, AWS EC2, Kubernetes**
 
 ## Architecture Overview
 
@@ -181,7 +184,7 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
 }
 ```
 
-#### Media (for Attachment Metadata)
+#### 9 Media (for Attachment Metadata)
 ```js
 {
   _id: ObjectId,
@@ -196,7 +199,7 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
   uploadedAt: Date
 }
 ```
-#### Collection (for lists of starred messages, lists of image|video|file)
+#### 10 Collection (for lists of starred messages, lists of image|video|file)
 ```js
 {
   _id: ObjectId,
@@ -206,7 +209,6 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
   attachments: [ObjectId],                     // Ref: Media _ids
 }
 ```
-
 
 **Notes:**
 - All media (images, files, videos, audios, documents, and avatars) are stored in AWS S3, with only the metadata and S3 URLs stored in MongoDB.
@@ -220,26 +222,70 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
 ## API Reference
 
 ## Socket.IO Events
+
 ## Installation & Setup
+
 ## Deployment
+
 ## Usage
-  ### API testing instructions (e.g. via Postman)
-  ### How to test chat messages
+  ### API testing instructions (Postman)
+  The server's REST API is tested via Postman. Below are example requests and usage instructions
+  #### Authentication
+  Register a new User
+```
+POST /api/v1/auth/register
+Content-Type: application/json
+{
+	"firstName": "Jenny",
+	"lastName": "Smith",
+	"email": "xxxx@gmail.com",
+	"password": "xxxxxxxxx",
+	"passwordConfirm": "xxxxxxxx"
+}
+```
+	
+Login and get token
+```
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+	"email": "xxxx@gmail.com",
+	"password": "xxxxxxxxx"
+}
+```
+
+Reset password
+```
+PATCH /api/v1/auth/resetPassword
+Content-Type: application/json
+{
+	"password": "xxxxxxxxx",
+	"passwordConfirm": "xxxxxxxxx",
+	"token": "b9a68537..............."
+}
+```
+
+**Notes:**
+- All protected routes require an Authorization header: `Authorization: Bearer <your_token>`
+  
+### How to test chat messages
+
 ## Security Notes
 * Security Headers
-    * Helmet -- Sets various HTTP headers to protect against well-known web vulnerabilities (e.g., clickjacking, MIME sniffing, etc.)
+    * **Helmet** -- Sets various HTTP headers to protect against well-known web vulnerabilities (e.g., clickjacking, MIME sniffing, etc.)
 * Rate Limiting & Request Control
-    * express-rate-limit – Throttle repeated requests to public APIs and endpoints to prevent brute-force attacks
+    * **express-rate-limit** – Throttle repeated requests to public APIs and endpoints to prevent brute-force attacks
 * Input Sanitization & XSS Protection
-    * express-mongo-sanitize – Prevents NoSQL injection by removing prohibited characters in MongoDB queries
-    * xss – Sanitizes user input to prevent Cross-site scripting (XSS) attacks
+    * **express-mongo-sanitize** – Prevents NoSQL injection by removing prohibited characters in MongoDB queries
+    * **xss** – Sanitizes user input to prevent Cross-site scripting (XSS) attacks
 * Cookie Security
-    * cookie-parser – Parses and verifies signed cookies
-    * cookie-session – Provides secure and efficient session management
+    * **cookie-parser** – Parses and verifies signed cookies
+    * **cookie-session** – Provides secure and efficient session management
 * CORS Configuration
-    * cors – Configured to allow only trusted domains and control HTTP methods and headers allowed by the server
+    * **cors** – Configured to allow only trusted domains and control HTTP methods and headers allowed by the server
 * Authentication & Authorization: 
-    * JWT -- to implement stateless and secure authentication.
+    * **JWT** -- to implement stateless and secure authentication.
         * The token is then used to authenticate requests to protected routes and it was passed via authorization: Bearer <token> header (preferred)
         * Token expiration: JWTs expire after a configurable period (e.g., 1 hour).
         * Secure storage: tokens are stored in secure, HTTP-only cookies to mitigate XSS attacks.
