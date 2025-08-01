@@ -1,14 +1,44 @@
 # realtime-chat-app-server
-## Outline
-* Summary
-* Design
-  * Data Models
-  * Restful API Design
-  * Socket Events Design
-* Actions
+## Summary
 
-## Design
-### Data Model
+## Outline
+* Key Features
+* Tech Stack / Dependencies
+* Architecture Overview
+* Data Models
+* API Reference
+* Socket.IO Events
+* Installation & Setup
+* Deployment
+* Usage
+  * API testing instructions (e.g. via Postman)
+  * How to test chat messages
+* Security Notes
+  * JWT authentication
+  * HTTPS usage
+* Known Issues / Limitations
+  * Features under development
+  * Current Issues
+* Acknowledgements
+
+## Key Features
+* User authentication and authorization
+* Real-time 1:1 messaging
+* Group chat with admin roles
+* AI assistant via OpenAI
+* Audio/video call support
+* Message starring
+* Media uploads via AWS S3
+
+## Tech Stack / Dependencies
+* Runtime & language: Node.js, Express.js
+* Database: MongoDB + AWS S3 (file storage)
+* Real-time: Socket.IO
+* optional: Docker, AWS EC2, Kubernetes
+
+## Architecture Overview
+
+## Data Models
 This project uses **MongoDB** for storing users, groups, messages, and other structured data, and **AWS S3** for storing images, files, and attachments. Below are the main data models used in the backend. 
 #### 1 User
 ```js
@@ -170,3 +200,19 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
 - Embedded arrays (e.g., starred messages, group members) for fast access, but may be normalized if lists become very large.
 - Timestamps on all models to help with sorting and querying.
 - AI chat is modeled as a specific chat type or even a special chat per user.
+
+## API Reference
+
+## Socket.IO Events
+## Installation & Setup
+## Deployment
+## Usage
+  ### API testing instructions (e.g. via Postman)
+  ### How to test chat messages
+## Security Notes
+  * JWT authentication
+  * HTTPS usage
+## Known Issues / Limitations
+  ### Features under development
+  ### Current Issues
+## Acknowledgements
