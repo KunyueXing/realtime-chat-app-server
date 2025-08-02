@@ -2,20 +2,19 @@
 ## Summary
 
 ## Outline
-* Key Features
-* Tech Stack / Dependencies
+* [Key Features](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#key-features)
+* [Tech Stack / Dependencies](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#tech-stack--dependencies)
 * Architecture Overview
-* Data Models
+* [Data Models](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#data-models)
 * API Reference
+* [Controllers and API Design](https://github.com/KunyueXing/realtime-chat-app-server/edit/main/README.md#controllers--api-design)
 * Socket.IO Events
 * Installation & Setup
 * Deployment
-* Usage
-  * API testing instructions (via Postman)
+* [Usage](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#usage)
+  * [API testing instructions (Postman)](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#api-testing-instructions-postman)
   * How to test chat messages
-* Security Notes
-  * JWT authentication
-  * HTTPS usage
+* [Security Notes](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#security-notes)
 * Known Issues / Limitations
   * Features under development
   * Current Issues
@@ -58,7 +57,9 @@
 ## Architecture Overview
 
 ## Data Models
-This project uses **MongoDB** for storing users, groups, messages, and other structured data, and **AWS S3** for storing images, files, and attachments. Below are the main data models used in the backend. 
+This project uses **MongoDB** for storing users, groups, messages, and other structured data, and **AWS S3** for storing images, files, and attachments. Below are the main data models used in the backend. <br>
+
+Only the User and Invitation Requests data models are detailed in this section; for descriptions of other models, please refer to [docs/dataModelsDesign.md](docs/dataModelsDesign.md).
 #### 1 User
 ```js
 {
@@ -89,6 +90,7 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
   collections: [ObjectId]          // Ref: Collection _ids
 }
 ```
+---
 #### 2 Invitation Request (friend, group invitation)
 ```js
 {
@@ -100,115 +102,8 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
   status: "pending" | "accepted" | "rejected",
 }
 ```
-#### 3 Chat (1:1 and group)
-```js
-{
-  _id: ObjectId,
-  isGroup: Boolean,
-  name: String,               // For group chat
-  participants: [ObjectId],   // Ref: User _ids (2 for 1:1, many for group)
-  groupId: ObjectId,          // Ref: Group _id
-  messages: [ObjectId],       // Ref: Message _ids
-  lastMessage: ObjectId,      // Ref: Message _id
-  pinnedBy: [ObjectId],       // Ref: User _ids -- who pinned this chat
-  createdAt: Date,            // Default: Date.now()
-  updatedAt: Date
-}
-```
-#### 4 Group
-```js
-{
-  _id: ObjectId,
-  name: String,
-  members: [ObjectId],       // User _ids
-  admins: [ObjectId],        // User _ids
-  invited: [ObjectId],       // User _ids (pending invitations)
-  createdAt: Date,           // Default: Date.now()
-  updatedAt: Date
-}
-```
-#### 5 Message
-```js
-{
-  _id: ObjectId,
-  chatId: ObjectId,                                                       // Ref: Chat _id
-  groupId: ObjectId,                                                      // Ref: Group _id -- If group message
-  sender: ObjectId,                                                       // Ref: User _id
-  content: String,                                                        // Text content
-  type: "text" | "image" | "file" | "link" | "emoji" | "video"| "audio",
-  attachments: [ObjectId],                                                // Ref: Media _id -- for image/file/link/emoji/video/audio
-  starredBy: [ObjectId],                                                  // Users who starred this message
-  readBy: [ObjectId],                                                     // Users who have read the message
-  createdAt: Date,
-  updatedAt: Date,
-  deleted: Boolean
-}
-```
-#### 6 AI Chat
-```js
-{
-  _id: ObjectId,
-  userId: ObjectId,           // Ref: User _id
-  messages: [ObjectId],       // Ref: Message _ids
-  pinned: true,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-#### 7 Notification
+---
 
-```js
-{
-  _id: ObjectId,
-  userId: ObjectId,
-  type: "message" | "friend_request" | "group_invite"
-  content: String,
-  relatedId: ObjectId,                                  // e.g., messageId, groupId
-  read: Boolean,
-  createdAt: Date
-}
-```
-#### 8 Call (for audio/video calls)
-
-```js
-{
-  _id: ObjectId,
-  type: "audio" | "video",
-  chatId: ObjectId,                          // Ref: Chat _id
-  groupId: ObjectId,                         // Ref: Group _id
-  initiator: ObjectId,                       // Ref: User _id
-  participants: [ObjectId],                  // Ref: User _ids
-  startedAt: Date,
-  endedAt: Date,
-  status: "ongoing" | "ended" | "missed"
-}
-```
-
-#### 9 Media (for Attachment Metadata)
-```js
-{
-  _id: ObjectId,
-  uploader: ObjectId,                             // Ref: User _id
-  chatId: ObjectId,                               // Ref: Chat _id
-  groupId: ObjectId,                              // Ref: Group _id
-  type: "image" | "file" | "video" | "audio",
-  url: String,                                    // S3 URL
-  fileType: String,
-  name: String,
-  size: Number,
-  uploadedAt: Date
-}
-```
-#### 10 Collection (for lists of starred messages, lists of image|video|file)
-```js
-{
-  _id: ObjectId,
-  chatId: ObjectId,                            // Ref: Chat _id
-  owner: ObjectId,                             // Ref: User _id
-  starredMessages: [ObjectId],                 // Ref: Message _ids
-  attachments: [ObjectId],                     // Ref: Media _ids
-}
-```
 
 **Notes:**
 - All media (images, files, videos, audios, documents, and avatars) are stored in AWS S3, with only the metadata and S3 URLs stored in MongoDB.
@@ -220,6 +115,42 @@ This project uses **MongoDB** for storing users, groups, messages, and other str
 - AI chat is modeled as a specific chat type or even a special chat per user.
 
 ## API Reference
+
+## Controllers & API Design
+This backend project is organized using modular controllers, each responsible for a distinct feature set. Below are the main controllers, their responsibilities, and the API endpoints they handle. <br>
+
+Only the AuthController and UserController are detailed in this section; for descriptions of other models, please refer to [docs/ControllerAPIDesign.md](docs/ControllerAPIDesign.md).
+
+### AuthController
+
+Handles user authentication, registration, and verification.
+
+| Function               | HTTP Method | Endpoint                        | Description                     |
+|------------------------|-------------|----------------------------------|---------------------------------|
+| register               | POST        | /api/v1/auth/register           | User registration               |
+| verifyOTP              | POST        | /api/v1/auth/verify             | Email verification              |
+| login                  | POST        | /api/v1/auth/login              | User login                      |
+| logout                 | POST        | /api/v1/auth/logout             | User logout                     |
+| forgotPassword         | POST        | /api/v1/auth/forgot-password    | Request password reset          |
+| resetPassword          | POST        | /api/v1/auth/reset-password     | Reset password                  |
+
+---
+### UserController
+
+Manages user profiles and user settings.
+
+| Function        | HTTP Method | Endpoint                         | Description                  |
+|-----------------|-------------|-----------------------------------|------------------------------|
+| getProfile      | GET         | /api/v1/users/me                 | Get current user profile     |
+| updateProfile   | PATCH       | /api/v1/users/me                 | Update current user profile  |
+| searchUsers     | GET         | /api/v1/users/search             | Search for users             |
+| getUserById     | GET         | /api/v1/users/{userId}           | Get other users' profile data by ID|
+| listNonFriends  | GET         | /api/v1/users/non-friends        | List users who are not friends with the authenticated user |
+
+---
+**Notes:**
+- All endpoints are prefixed with `/api/v1` for versioning and API separation.
+- Controllers can be further split or merged as the project scales.
 
 ## Socket.IO Events
 
