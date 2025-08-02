@@ -1,0 +1,300 @@
+openapi: 3.0.3
+info:
+  title: Real-Time Chat App API
+  version: 1.0.0
+  description: >
+    RESTful API for a real-time chat application, supporting user and chat management, messaging, media, calls, and more.
+servers:
+  - url: https://tobedefined.com/api/v1
+    description: Production server
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+
+tags:
+  - name: Auth
+  - name: Users
+  - name: Friends
+  - name: Chats
+  - name: Groups
+  - name: Messages
+  - name: Calls
+  - name: Notifications
+  - name: Media
+  - name: AI
+  - name: Admin (optional)
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserRegister" }
+      responses:
+        '201':
+          description: User registered, email verification sent
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+        '409':
+          description: Email is already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Email is already exists
+
+  /auth/verify:
+    post:
+      tags: [Auth]
+      summary: Verify registered email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserVerify" }
+      responses:
+        '200':
+          description: Email successfully verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email verified successfully
+        '400':
+          description: Invalid email format or OTP has expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid email format or OTP has expired
+        '409':
+          description: Email is already verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Email is already verified
+        '401':
+          description: Incorrect OTP provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Incorrect OTP
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserLogin" }
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthResponse" }
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Email and password are required"
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid email or password"
+        '403':
+          description: Email not verified or account disabled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Please verify your email first"
+        '429':
+          description: Too many login attempts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Too many login attempts. Try again later"
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      responses:
+        '204':
+          description: Logout successful
+
+  /auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Request a password reset email
+      description: Sends a password reset OTP or link to the provided email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:  { $ref: "#/components/schemas/PasswordResetRequest" }
+      responses:
+        '200':
+          description: Password reset instructions sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset instructions have been sent to your email.
+        '400':
+          description: Email field is missing or invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Please provide a valid email address.
+        '404':
+          description: Email not found in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No account is associated with this email.
+        '429':
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Too many reset attempts. Please try again later.
+        '500':
+          description: Server error while sending email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to send password reset email. Please try again later.
+
+  /auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Reset user password using OTP
+      description: Allows the user to reset their password using a valid email and OTP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PasswordReset" }
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password has been reset successfully.
+        '400':
+          description: Missing fields or invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Email, OTP, and new password are required.
+        '401':
+          description: Invalid or expired OTP
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: The provided OTP is incorrect or has expired.
+        '404':
+          description: Email not registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No user found with this email.
+        '409':
+          description: Password already used recently (optional)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: New password cannot be the same as the previous password.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to reset password. Please try again later.
