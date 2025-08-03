@@ -58,6 +58,7 @@ Handles chat management (1:1 and group chats, excluding messages).
 | pinChat       | POST        | /api/v1/chats/{chatId}/pin      | Pin a chat                   |
 | unpinChat     | POST        | /api/v1/chats/{chatId}/unpin    | Unpin a chat                 |
 | getChatById   | GET         | /api/v1/chats/{chatId}          | Get details of chat (participants, group info, last message, pinned status, etc) by ID    |
+| listStarredMessages| GET    | /api/v1/chats/{chatId}/starred-messages | List current user's starred messages in a chat        |
 
 ---
 
@@ -90,7 +91,6 @@ Handles sending, editing, starring, and fetching messages.
 | deleteMessage           | DELETE      | /api/v1/messages/{messageId}              | Delete a message             |
 | starMessage             | POST        | /api/v1/messages/{messageId}/star         | Star a message               |
 | unstarMessage           | POST        | /api/v1/messages/{messageId}/unstar       | Unstar a message             |
-| listStarredMessages     | GET         | /api/v1/users/me/starred-messages         | List starred messages        |
 
 ---
 
@@ -161,3 +161,4 @@ Handles admin and moderation tasks.
 - This structure promotes maintainability, scalability, and clarity for future contributors.
 
 ---
+
