@@ -298,3 +298,414 @@ paths:
                   error:
                     type: string
                     example: Failed to reset password. Please try again later.
+
+  /users/me:
+      get:
+        tags: [Users]
+        summary: Get current user profile
+        responses:
+          '200':
+            description: User profile
+            content:
+              application/json:
+                schema: { $ref: "#/components/schemas/User" }
+          '401':
+            description: Unauthorized - Invalid or missing token
+      patch:
+        tags: [Users]
+        summary: Update own profile
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserProfileUpdate" }
+        responses:
+          '200':
+            description: User profile updated
+            content:
+              application/json:
+                schema: { $ref: "#/components/schemas/User" }
+          '400':
+            description: Bad request - Invalid input data
+          '401':
+            description: Unauthorized - Invalid or missing token
+
+  /users/search:
+    get:
+      tags: [Users]
+      summary: Search for users
+      parameters:
+        - $ref: "#/components/parameters/UserSearchQuery"
+      responses:
+        '200':
+          description: List of matched users
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/User" }
+        '400':
+          description: Bad request - Missing or malformed query parameter
+        '401':
+          description: Unauthorized - Invalid or missing token
+
+  /users/{userId}:
+    get:
+      tags: [Users]
+      summary: Get user profile by ID
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+        '404':
+          description: User not found
+        '401':
+          description: Unauthorized - Invalid or missing token
+
+  /users/non-friends:
+    get:
+      tags: [Users]
+      summary: List users who are not friends
+      responses:
+        '200':
+          description: List of non-friend users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized - Invalid or missing token
+  
+  /friends/requests:
+    post:
+      tags: [Friends]
+      summary: Send a friend request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FriendRequestSend" }
+      responses:
+        '201':
+          description: Friend request sent
+        '400':
+          description: Bad request - Missing or invalid target user ID
+        '401':
+          description: Unauthorized - User not authenticated
+        '409':
+          description: Conflict - Friend request already sent or users already friends
+
+    get:
+      tags: [Friends]
+      summary: List incoming/outgoing friend requests
+      responses:
+        '200':
+          description: List of friend requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/FriendRequest" }
+        '401':
+          description: Unauthorized - User not authenticated
+
+  /friends/requests/{requestId}/accept:
+    post:
+      tags: [Friends]
+      summary: Accept a friend request
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        '200':
+          description: Friend request accepted
+        '401':
+          description: Unauthorized - User not authenticated
+        '404':
+          description: Friend request not found
+        '409':
+          description: Conflict - Request already accepted/rejected
+
+  /friends/requests/{requestId}/reject:
+    post:
+      tags: [Friends]
+      summary: Reject a friend request
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        '200':
+          description: Friend request rejected
+        '401':
+          description: Unauthorized - User not authenticated
+        '404':
+          description: Friend request not found
+        '409':
+          description: Conflict - Request already handled
+
+  /friends:
+    get:
+      tags: [Friends]
+      summary: List all friends
+      responses:
+        '200':
+          description: List of friends
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/User" }
+        '401':
+          description: Unauthorized - User not authenticated
+
+  /friends/{friendUserId}:
+    delete:
+      tags: [Friends]
+      summary: Remove a friend
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        '204':
+          description: Friend removed successfully
+        '401':
+          description: Unauthorized - User not authenticated
+        '404':
+          description: Friend not found
+
+  /chats:
+    get:
+      tags: [Chats]
+      summary: List all chats (1:1 and group)
+      responses:
+        '200':
+          description: List of chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chat'
+        '401':
+          description: Unauthorized - User not authenticated
+
+  /chats/search:
+    get:
+      tags: [Chats]
+      summary: Search for a chat
+      parameters:
+        - $ref: '#/components/schemas/ChatSearchQuery'
+      responses:
+        '200':
+          description: Array of chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Chat" }
+        '400':
+          description: Bad Request - Missing or invalid query parameter
+        '401':
+          description: Unauthorized - User not authenticated
+
+  /chats/{chatId}:
+    get:
+      tags: [Chats]
+      summary: Get chat by ID
+      parameters:
+        - $ref: "#/components/parameters/ChatId"
+      responses:
+        '200':
+          description: Chat details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chat'
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User not a participant in this chat
+        '404':
+          description: Chat not found
+
+  /chats/{chatId}/pin:
+    post:
+      tags: [Chats]
+      summary: Pin a chat
+      parameters:
+        - $ref: "#/components/parameters/ChatId"
+      responses:
+        '200':
+          description: Chat pinned
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User not a participant in this chat
+        '404':
+          description: Chat not found
+
+  /chats/{chatId}/unpin:
+    post:
+      tags: [Chats]
+      summary: Unpin a chat
+      parameters:
+        - $ref: "#/components/parameters/ChatId"
+      responses:
+        '200':
+          description: Chat unpinned
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User not a participant in this chat
+        '404':
+          description: Chat not found
+
+  /chats/{chatId}/messages:
+    post:
+      tags: [Messages]
+      summary: Send a message in a chat
+      parameters:
+        - $ref: "#/components/parameters/ChatId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MessageSend" }
+      responses:
+        '201':
+          description: Message sent
+        '400':
+          description: Invalid message data
+        '401':
+          description: Unauthorized - User not authenticated
+        '403':
+          description: Forbidden - User not part of this chat
+        '404':
+          description: Chat not found
+
+    get:
+      tags: [Messages]
+      summary: Get messages in a chat
+      parameters:
+        - $ref: "#/components/parameters/ChatId"
+        - name: before
+          in: query
+          schema: { type: string, format: date-time }
+          description: Fetch messages before this timestamp
+        - name: limit
+          in: query
+          schema: { type: integer, default: 30 }
+          description: Number of messages to fetch
+      responses:
+        '200':
+          description: Array of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Message" }
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - User not part of this chat
+        '404':
+          description: Chat not found
+
+  /chats/{chatId}/starred-messages:
+    get:
+      summary: List current user's starred messages in a chat
+      description: Retrieve all messages starred by the current user in the specified chat.
+      tags: [Messages]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ChatId"
+      responses:
+        '200':
+          description: List of starred messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '401':
+          description: Unauthorized - authentication required
+        '404':
+          description: Chat not found
+
+  /messages/{messageId}:
+    patch:
+      tags: [Messages]
+      summary: Edit a message
+      parameters:
+        - $ref: "#/components/parameters/MessageId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MessageEdit" }
+      responses:
+        '200':
+          description: Message edited
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Cannot edit message
+        '404':
+          description: Message not found
+
+    delete:
+      tags: [Messages]
+      summary: Delete a message
+      parameters:
+        - $ref: "#/components/parameters/MessageId"
+      responses:
+        '204':
+          description: Message deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Cannot delete message
+        '404':
+          description: Message not found
+
+  /messages/{messageId}/star:
+    post:
+      tags: [Messages]
+      summary: Star a message
+      parameters:
+        - $ref: "#/components/parameters/MessageId"
+      responses:
+        '200':
+          description: Message starred
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Cannot star this message
+        '404':
+          description: Message not found
+
+  /messages/{messageId}/unstar:
+    post:
+      tags: [Messages]
+      summary: Unstar a message
+      parameters:
+        - $ref: "#/components/parameters/MessageId"
+      responses:
+        '200':
+          description: Message unstarred
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Cannot unstar this message
+        '404':
+          description: Message not founds
