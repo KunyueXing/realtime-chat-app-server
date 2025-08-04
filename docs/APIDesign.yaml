@@ -637,6 +637,66 @@ paths:
         '404':
           description: Chat not found
 
+  /chats/{chatId}/media:
+    get:
+      tags: [Media]
+      summary: List all media (including links, files, audios, images and videos) in a chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ChatId"
+      responses:
+        '200':
+          description: Media list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Media" }
+        '401':
+          description: Unauthorized
+        '404':
+          description: Chat not found
+
+  /chats/ai/messages:
+    post:
+      tags: [AI]
+      summary: Send message to AI chat
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AIMessageSend" }
+      responses:
+        '200':
+          description: AI response returned
+        '400':
+          description: Invalid input (missing or invalid message)
+        '401':
+          description: Unauthorized
+        '500':
+          description: AI service error
+
+    get:
+      tags: [AI]
+      summary: Get AI chat history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: AI chat messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Message" }
+        '401':
+          description: Unauthorized
+        '500':
+          description: Error retrieving history
+
   /messages/{messageId}:
     patch:
       tags: [Messages]
@@ -709,3 +769,512 @@ paths:
           description: Forbidden - Cannot unstar this message
         '404':
           description: Message not founds
+
+  /groups:
+    post:
+      tags: [Groups]
+      summary: Create a group chat
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupCreate" }
+      responses:
+        '201':
+          description: Group created
+        '400':
+          description: Invalid group data
+        '401':
+          description: Unauthorized
+    get:
+      tags: [Groups]
+      summary: List group chats
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of groups
+        '401':
+          description: Unauthorized
+
+  /groups/{groupId}:
+    get:
+      tags: [Groups]
+      summary: Get group info
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      responses:
+        '200':
+          description: Group
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Group" }
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group not found
+
+  /groups/{groupId}/invite:
+    post:
+      tags: [Groups]
+      summary: Invite members to group
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupInvite" }
+      responses:
+        '200':
+          description: Members invited
+        '400':
+          description: Invalid member IDs
+        '401':
+          description: Unauthorized
+        '403':
+          description: Only group admin can invite members
+        '404':
+          description: Group not found
+
+  /groups/{groupId}/accept:
+    post:
+      tags: [Groups]
+      summary: Accept group invitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      responses:
+        '200':
+          description: Invitation accepted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group or invitation not found
+        '409':
+          description: Already a group member
+
+  /groups/{groupId}/reject:
+    post:
+      tags: [Groups]
+      summary: Reject group invitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      responses:
+        '200':
+          description: Invitation rejected
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group or invitation not found
+
+  /groups/{groupId}/leave:
+    post:
+      tags: [Groups]
+      summary: Leave group
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      responses:
+        '200':
+          description: Left group
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group not found
+
+  /groups/{groupId}/members/{userId}:
+    delete:
+      tags: [Groups]
+      summary: Remove member (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        '204':
+          description: Member removed
+        '401':
+          description: Unauthorized
+        '403':
+          description: Only admin can remove members
+        '404':
+          description: Group or user not found
+
+  /calls/audio:
+    post:
+      tags: [Calls]
+      summary: Start audio call with friend
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              - $ref: "#/components/schemas/CallReceipient"
+      responses:
+        '201':
+          description: Audio call started successfully
+        '400':
+          description: Invalid request payload
+        '404':
+          description: Recipient not found
+        '500':
+          description: Server error
+
+  /calls/video:
+    post:
+      tags: [Calls]
+      summary: Start video call with friend
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              - $ref: "#/components/schemas/CallReceipient"
+      responses:
+        '201':
+          description: Video call started
+        '400':
+          description: Invalid request payload
+        '404':
+          description: Recipient not found
+        '500':
+          description: Server error
+
+  /groups/{groupId}/calls/audio:
+    post:
+      tags: [Calls]
+      summary: Start group audio call
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      responses:
+        '201':
+          description: Group audio call started
+        '404':
+          description: Group not found
+        '403':
+          description: Unauthorized to start group call
+        '500':
+          description: Server error
+
+  /groups/{groupId}/calls/video:
+    post:
+      tags: [Calls]
+      summary: Start group video call
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      responses:
+        '201':
+          description: Group video call started
+        '404':
+          description: Group not found
+        '403':
+          description: Unauthorized to start group call
+        '500':
+          description: Server error
+
+  /calls/audio/{audioCallId}/end:
+    post:
+      tags: [Call]
+      summary: End an ongoing audio call
+      parameters:
+        - $ref: "#/components/parameters/AudioCallId"
+      responses:
+        '200':
+          description: Audio call ended successfully
+        '404':
+          description: Call not found
+        '500':
+          description: Server error
+
+  /calls/video/{videoCallId}/end:
+    post:
+      tags: [Call]
+      summary: End an ongoing video call
+      parameters:
+        - $ref: "#/components/parameters/VideoCallId"
+      responses:
+        '200':
+          description: Video call ended successfully
+        '404':
+          description: Call not found
+        '500':
+          description: Server error
+
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: Get notifications
+      responses:
+        '200':
+          description: Notification list retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Notification" }
+
+  /notifications/{notificationId}/read:
+    post:
+      tags: [Notifications]
+      summary: Mark notification as read
+      parameters:
+        - $ref: "#/components/parameters/NotificationId"
+      responses:
+        '200':
+          description: Notification read
+        '404':
+          description: Notification not found
+        '500':
+          description: Server error
+
+components:
+  parameters:
+    UserSearchQuery:
+      name: query
+      in: query
+      required: true
+      schema: { type: string }
+      description: Username or email to search for
+    ChatSearchQuery:
+      name: query
+      in: query
+      required: true
+      schema: { type: string }
+      description: Chat name or participant to search for
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the user
+    RequestId:
+      name: requestId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the friend request
+    ChatId:
+      name: chatId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the chat
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the group
+    MessageId:
+      name: messageId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the message
+    AudioCallId:
+      name: audioCallId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the audio call
+    VideoCallId:
+      name: videoCallId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the video call
+    NotificationId:
+      name: notificationId
+      in: path
+      required: true
+      schema: { type: string }
+      description: ID of the notification
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        username: { type: string }
+        email: { type: string }
+        avatar: { type: string }
+        displayName: { type: string }
+        bio: { type: string }
+        createdAt: { type: string, format: date-time }
+    UserRegister:
+      type: object
+      properties:
+        username: { type: string }
+        email: { type: string }
+        password: { type: string }
+      required: [username, email, password]
+    UserVerify:
+      type: object
+      properties:
+        email: { type: string }
+        code: { type: string }
+      required: [email, code]
+    UserLogin:
+      type: object
+      properties:
+        email: { type: string }
+        password: { type: string }
+      required: [email, password]
+    PasswordResetRequest:
+      type: object
+      properties:
+        email: { type: string }
+      required: [email]
+    PasswordReset:
+      type: object
+      properties:
+        email: { type: string }
+        code: { type: string }
+        newPassword: { type: string }
+      required: [email, code, newPassword]
+    AuthResponse:
+      type: object
+      properties:
+        token: { type: string }
+        user: { $ref: "#/components/schemas/User" }
+    UserProfileUpdate:
+      type: object
+      properties:
+        avatar: { type: string }
+        bio: { type: string }
+        displayName: { type: string }
+    FriendRequestSend:
+      type: object
+      properties:
+        targetUserId: { type: string }
+      required: [targetUserId]
+    FriendRequest:
+      type: object
+      properties:
+        id: { type: string }
+        from: { $ref: "#/components/schemas/User" }
+        to: { $ref: "#/components/schemas/User" }
+        status: { type: string, enum: [pending, accepted, rejected] }
+        createdAt: { type: string, format: date-time }
+    Chat:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        isGroup: { type: boolean }
+        members:
+          type: array
+          items: { $ref: "#/components/schemas/User" }
+        avatar: { type: string }
+        pinned: { type: boolean }
+        lastMessage: { $ref: "#/components/schemas/Message" }
+        createdAt: { type: string, format: date-time }
+    Message:
+      type: object
+      properties:
+        id: { type: string }
+        chatId: { type: string }
+        sender: { $ref: "#/components/schemas/User" }
+        recipient: { $ref: "#/components/schemas/User" }
+        content: { type: string }
+        type: { type: string, enum: [text, image, file, emoji, link, video, audio] }
+        attachments:
+          type: array
+          items: { $ref: "#/components/schemas/Media" }
+        starredBy:
+          type: array
+          items: { $ref: "#/components/schemas/User" }
+        readBy:
+          type: array
+          items: { $ref: "#/components/schemas/User" }
+        createdAt: { type: string, format: date-time }
+    MessageSend:
+      type: object
+      properties:
+        content: { type: string }
+        recipientId: { type: string }
+        type: { type: string, enum: [text, image, file, emoji, link, video, audio] }
+        attachments:
+          type: array
+          items: { $ref: "#/components/schemas/Media" }
+      required: [content, type, recipientId]
+    MessageEdit:
+      type: object
+      properties:
+        content: { type: string }
+      required: [content]
+    SecuritySchemes:
+      BearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+    Group:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        avatar: { type: string }
+        members:
+          type: array
+          items: { $ref: "#/components/schemas/User" }
+        admins:
+          type: array
+          items: { $ref: "#/components/schemas/User" }
+        createdAt: { type: string, format: date-time }
+    GroupCreate:
+      type: object
+      properties:
+        name: { type: string }
+        memberIds:
+          type: array
+          items: { type: string }
+      required: [name, memberIds]
+    GroupInvite:
+      type: object
+      properties:
+        memberIds:
+          type: array
+          items: { type: string }
+      required: [memberIds]
+    Media:
+      type: object
+      properties:
+        id: { type: string }
+        url: { type: string }
+        type: { type: string, enum: [image, video, audio, file] }
+        size: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        previewImage: { type: string }
+        uploadedAt: { type: string, format: date-time }       
+      required: [id, url, type, size] 
+    AIMessageSend:
+      type: object
+      properties:
+        message: { type: string }
+      required: [message]
+    CallReceipient:
+      type: object
+      properties:
+        targetUserId: { type: string }
+      required: [targetUserId]
+    Notification:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        message: { type: string }
+        read: { type: boolean }
+        createdAt: { type: string, format: date-time }
