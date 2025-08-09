@@ -126,8 +126,8 @@ This backend exposes a comprehensive REST API following OpenAPI 3.0 specificatio
 
 #### Key Features:
 
-- RESTful Design - Standard HTTP methods (GET, POST, PATCH, DELETE) with intuitive resource naming
-- Versioned API - All endpoints prefixed with /api/v1 for backward compatibility
+- RESTful Design - Standard HTTP methods (`GET`, `POST`, `PATCH`, `DELETE`) with intuitive resource naming
+- Versioned API - All endpoints prefixed with `/api/v1` for backward compatibility
 - JWT Authentication - Secure token-based authentication with protected routes
 - Consistent Response Format - Standardized JSON responses with proper HTTP status codes
 - Comprehensive Coverage - Supports user registration/authentication, friend management, chat operations, group functionality, media handling, and administrative features
@@ -218,6 +218,25 @@ Handles friend management and requests.
 ---
 
 ### 5.3 WebSocket Event Design
+
+This backend implements a comprehensive WebSocket event system using Socket.IO to enable real-time communication and live updates throughout the chat application. The WebSocket layer works in conjunction with the REST API to provide instant message delivery, live notifications, and real-time call signaling.
+
+#### Key Features:
+
+- Real-time Message Delivery - Instant message broadcasting to chat participants without HTTP polling
+- Live Status Updates - Real-time typing indicators, user presence, and online/offline status
+- WebRTC Signaling - Coordination for audio/video calls including offer/answer exchange and ICE candidates (actual media flows peer-to-peer via WebRTC)
+- Push Notifications - Instant delivery of friend requests, message notifications, and system alerts
+- Room-based Architecture - Users join specific chat rooms for efficient message routing and bandwidth optimization
+
+#### Architecture Highlights:
+
+- Hybrid Communication - Socket.IO events complement HTTP endpoints for reliability (HTTP for persistence + Socket.IO for real-time delivery)
+- Connection Management - Automatic reconnection with Socket.IO's built-in fallback to HTTP long-polling on WebSocket connection loss
+- Scalable Design - Room-based event routing to minimize unnecessary broadcasts and server load
+- Security Integration - JWT token validation for Socket.IO connections with user authorization
+
+The Socket.IO implementation ensures users receive instant updates while maintaining robust fallback mechanisms for reliable communication even under poor network conditions, making it ideal for production chat applications. For the detailed design, find in [docs/SocketEventDesign.md](docs/SocketEventDesign.md)
 
 
 ## 6 Installation & Setup
