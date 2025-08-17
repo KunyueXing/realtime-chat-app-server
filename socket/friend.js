@@ -8,11 +8,6 @@ module.exports = async (socket, io) => {
     const receiver = await User.findById(data.receiver).select('socketId')
     const sender = await User.findById(data.sender).select('socketId')
 
-    await FriendRequest.create({
-      sender: data.sender,
-      receiver: data.receiver
-    })
-
     // Use optional chaining (?.) to safely access socketID from receiver
     // It won't throw an error if receiver is null or undefined, it just return undefined.
     try {
@@ -20,7 +15,7 @@ module.exports = async (socket, io) => {
         message: 'You have a new friend request'
       })
     } catch (error) {
-      console.error('Error sending friend request:', error)
+      console.error('Error receiving friend request:', error)
     }
 
     try {
