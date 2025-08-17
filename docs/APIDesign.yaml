@@ -32,13 +32,13 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/UserRegister" }
+            schema: { $ref: '#/components/schemas/UserRegister' }
       responses:
         '201':
           description: User registered, email verification sent
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/User" }
+              schema: { $ref: '#/components/schemas/User' }
         '409':
           description: Email is already exists
           content:
@@ -58,7 +58,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/UserVerify" }
+            schema: { $ref: '#/components/schemas/UserVerify' }
       responses:
         '200':
           description: Email successfully verified
@@ -109,13 +109,13 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/UserLogin" }
+            schema: { $ref: '#/components/schemas/UserLogin' }
       responses:
         '200':
           description: Login successful
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/AuthResponse" }
+              schema: { $ref: '#/components/schemas/AuthResponse' }
         '400':
           description: Missing required fields
           content:
@@ -125,7 +125,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Email and password are required"
+                    example: 'Email and password are required'
         '401':
           description: Invalid credentials
           content:
@@ -135,7 +135,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Invalid email or password"
+                    example: 'Invalid email or password'
         '403':
           description: Email not verified or account disabled
           content:
@@ -145,7 +145,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Please verify your email first"
+                    example: 'Please verify your email first'
         '429':
           description: Too many login attempts
           content:
@@ -155,7 +155,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Too many login attempts. Try again later"
+                    example: 'Too many login attempts. Try again later'
 
   /auth/logout:
     post:
@@ -174,7 +174,7 @@ paths:
         required: true
         content:
           application/json:
-            schema:  { $ref: "#/components/schemas/PasswordResetRequest" }
+            schema: { $ref: '#/components/schemas/PasswordResetRequest' }
       responses:
         '200':
           description: Password reset instructions sent
@@ -236,7 +236,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/PasswordReset" }
+            schema: { $ref: '#/components/schemas/PasswordReset' }
       responses:
         '200':
           description: Password reset successful
@@ -300,39 +300,39 @@ paths:
                     example: Failed to reset password. Please try again later.
 
   /users/me:
-      get:
-        tags: [Users]
-        summary: Get current user profile
-        security:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      security:
         - bearerAuth: []
-        responses:
-          '200':
-            description: User profile
-            content:
-              application/json:
-                schema: { $ref: "#/components/schemas/User" }
-          '401':
-            description: Unauthorized - Invalid or missing token
-      patch:
-        tags: [Users]
-        summary: Update own profile
-        security:
-        - bearerAuth: []
-        requestBody:
-          required: true
+      responses:
+        '200':
+          description: User profile
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/UserProfileUpdate" }
-        responses:
-          '200':
-            description: User profile updated
-            content:
-              application/json:
-                schema: { $ref: "#/components/schemas/User" }
-          '400':
-            description: Bad request - Invalid input data
-          '401':
-            description: Unauthorized - Invalid or missing token
+              schema: { $ref: '#/components/schemas/User' }
+        '401':
+          description: Unauthorized - Invalid or missing token
+    patch:
+      tags: [Users]
+      summary: Update own profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserProfileUpdate' }
+      responses:
+        '200':
+          description: User profile updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '400':
+          description: Bad request - Invalid input data
+        '401':
+          description: Unauthorized - Invalid or missing token
 
   /users/search:
     get:
@@ -341,7 +341,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/UserSearchQuery"
+        - $ref: '#/components/parameters/UserSearchQuery'
       responses:
         '200':
           description: List of matched users
@@ -349,7 +349,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/User" }
+                items: { $ref: '#/components/schemas/User' }
         '400':
           description: Bad request - Missing or malformed query parameter
         '401':
@@ -362,13 +362,13 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/UserId"
+        - $ref: '#/components/parameters/UserId'
       responses:
         '200':
           description: User profile retrieved
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/User" }
+              schema: { $ref: '#/components/schemas/User' }
         '404':
           description: User not found
         '401':
@@ -391,7 +391,7 @@ paths:
                   $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized - Invalid or missing token
-  
+
   /friends/requests:
     post:
       tags: [Friends]
@@ -402,7 +402,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/FriendRequestSend" }
+            schema: { $ref: '#/components/schemas/FriendRequestSend' }
       responses:
         '201':
           description: Friend request sent
@@ -425,7 +425,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/FriendRequest" }
+                items: { $ref: '#/components/schemas/FriendRequest' }
         '401':
           description: Unauthorized - User not authenticated
 
@@ -436,7 +436,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/RequestId"
+        - $ref: '#/components/parameters/RequestId'
       responses:
         '200':
           description: Friend request accepted
@@ -454,7 +454,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/RequestId"
+        - $ref: '#/components/parameters/RequestId'
       responses:
         '200':
           description: Friend request rejected
@@ -478,7 +478,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/User" }
+                items: { $ref: '#/components/schemas/User' }
         '401':
           description: Unauthorized - User not authenticated
 
@@ -489,7 +489,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/UserId"
+        - $ref: '#/components/parameters/UserId'
       responses:
         '204':
           description: Friend removed successfully
@@ -531,7 +531,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/Chat" }
+                items: { $ref: '#/components/schemas/Chat' }
         '400':
           description: Bad Request - Missing or invalid query parameter
         '401':
@@ -544,7 +544,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/ChatId"
+        - $ref: '#/components/parameters/ChatId'
       responses:
         '200':
           description: Chat details
@@ -566,7 +566,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/ChatId"
+        - $ref: '#/components/parameters/ChatId'
       responses:
         '200':
           description: Chat pinned
@@ -584,7 +584,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/ChatId"
+        - $ref: '#/components/parameters/ChatId'
       responses:
         '200':
           description: Chat unpinned
@@ -602,12 +602,12 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/ChatId"
+        - $ref: '#/components/parameters/ChatId'
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/MessageSend" }
+            schema: { $ref: '#/components/schemas/MessageSend' }
       responses:
         '201':
           description: Message sent
@@ -626,7 +626,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/ChatId"
+        - $ref: '#/components/parameters/ChatId'
         - name: before
           in: query
           schema: { type: string, format: date-time }
@@ -642,7 +642,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/Message" }
+                items: { $ref: '#/components/schemas/Message' }
         '401':
           description: Unauthorized
         '403':
@@ -658,7 +658,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/ChatId"
+        - $ref: '#/components/parameters/ChatId'
       responses:
         '200':
           description: List of starred messages
@@ -680,7 +680,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/ChatId"
+        - $ref: '#/components/parameters/ChatId'
       responses:
         '200':
           description: Media list retrieved successfully
@@ -688,7 +688,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/Media" }
+                items: { $ref: '#/components/schemas/Media' }
         '401':
           description: Unauthorized
         '404':
@@ -704,7 +704,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/AIMessageSend" }
+            schema: { $ref: '#/components/schemas/AIMessageSend' }
       responses:
         '200':
           description: AI response returned
@@ -727,7 +727,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/Message" }
+                items: { $ref: '#/components/schemas/Message' }
         '401':
           description: Unauthorized
         '500':
@@ -740,18 +740,18 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/MessageId"
+        - $ref: '#/components/parameters/MessageId'
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/MessageEdit" }
+            schema: { $ref: '#/components/schemas/MessageEdit' }
       responses:
         '200':
           description: Message edited
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Message" }
+              schema: { $ref: '#/components/schemas/Message' }
         '400':
           description: Invalid input
         '401':
@@ -767,7 +767,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/MessageId"
+        - $ref: '#/components/parameters/MessageId'
       responses:
         '204':
           description: Message deleted
@@ -785,7 +785,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/MessageId"
+        - $ref: '#/components/parameters/MessageId'
       responses:
         '200':
           description: Message starred
@@ -803,7 +803,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/MessageId"
+        - $ref: '#/components/parameters/MessageId'
       responses:
         '200':
           description: Message unstarred
@@ -824,7 +824,7 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/GroupCreate" }
+            schema: { $ref: '#/components/schemas/GroupCreate' }
       responses:
         '201':
           description: Group created
@@ -850,13 +850,13 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
+        - $ref: '#/components/parameters/GroupId'
       responses:
         '200':
           description: Group
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Group" }
+              schema: { $ref: '#/components/schemas/Group' }
         '401':
           description: Unauthorized
         '404':
@@ -869,12 +869,12 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
+        - $ref: '#/components/parameters/GroupId'
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/GroupInvite" }
+            schema: { $ref: '#/components/schemas/GroupInvite' }
       responses:
         '200':
           description: Members invited
@@ -894,7 +894,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
+        - $ref: '#/components/parameters/GroupId'
       responses:
         '200':
           description: Invitation accepted
@@ -912,7 +912,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
+        - $ref: '#/components/parameters/GroupId'
       responses:
         '200':
           description: Invitation rejected
@@ -928,7 +928,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
+        - $ref: '#/components/parameters/GroupId'
       responses:
         '200':
           description: Left group
@@ -944,8 +944,8 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
-        - $ref: "#/components/parameters/UserId"
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/UserId'
       responses:
         '204':
           description: Member removed
@@ -966,8 +966,8 @@ paths:
         required: true
         content:
           application/json:
-            schema: 
-              - $ref: "#/components/schemas/CallReceipient"
+            schema:
+              - $ref: '#/components/schemas/CallReceipient'
       responses:
         '201':
           description: Audio call started successfully
@@ -989,7 +989,7 @@ paths:
         content:
           application/json:
             schema:
-              - $ref: "#/components/schemas/CallReceipient"
+              - $ref: '#/components/schemas/CallReceipient'
       responses:
         '201':
           description: Video call started
@@ -1007,7 +1007,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
+        - $ref: '#/components/parameters/GroupId'
       responses:
         '201':
           description: Group audio call started
@@ -1025,7 +1025,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/GroupId"
+        - $ref: '#/components/parameters/GroupId'
       responses:
         '201':
           description: Group video call started
@@ -1043,7 +1043,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/AudioCallId"
+        - $ref: '#/components/parameters/AudioCallId'
       responses:
         '200':
           description: Audio call ended successfully
@@ -1059,7 +1059,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/VideoCallId"
+        - $ref: '#/components/parameters/VideoCallId'
       responses:
         '200':
           description: Video call ended successfully
@@ -1081,7 +1081,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/Notification" }
+                items: { $ref: '#/components/schemas/Notification' }
 
   /notifications/{notificationId}/read:
     post:
@@ -1090,7 +1090,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: "#/components/parameters/NotificationId"
+        - $ref: '#/components/parameters/NotificationId'
       responses:
         '200':
           description: Notification read
@@ -1208,7 +1208,7 @@ components:
       type: object
       properties:
         token: { type: string }
-        user: { $ref: "#/components/schemas/User" }
+        user: { $ref: '#/components/schemas/User' }
     UserProfileUpdate:
       type: object
       properties:
@@ -1224,8 +1224,8 @@ components:
       type: object
       properties:
         id: { type: string }
-        from: { $ref: "#/components/schemas/User" }
-        to: { $ref: "#/components/schemas/User" }
+        from: { $ref: '#/components/schemas/User' }
+        to: { $ref: '#/components/schemas/User' }
         status: { type: string, enum: [pending, accepted, rejected] }
         createdAt: { type: string, format: date-time }
     Chat:
@@ -1236,29 +1236,29 @@ components:
         isGroup: { type: boolean }
         members:
           type: array
-          items: { $ref: "#/components/schemas/User" }
+          items: { $ref: '#/components/schemas/User' }
         avatar: { type: string }
         pinned: { type: boolean }
-        lastMessage: { $ref: "#/components/schemas/Message" }
+        lastMessage: { $ref: '#/components/schemas/Message' }
         createdAt: { type: string, format: date-time }
     Message:
       type: object
       properties:
         id: { type: string }
         chatId: { type: string }
-        sender: { $ref: "#/components/schemas/User" }
-        recipient: { $ref: "#/components/schemas/User" }
+        sender: { $ref: '#/components/schemas/User' }
+        recipient: { $ref: '#/components/schemas/User' }
         content: { type: string }
         type: { type: string, enum: [text, image, file, emoji, link, video, audio] }
         attachments:
           type: array
-          items: { $ref: "#/components/schemas/Media" }
+          items: { $ref: '#/components/schemas/Media' }
         starredBy:
           type: array
-          items: { $ref: "#/components/schemas/User" }
+          items: { $ref: '#/components/schemas/User' }
         readBy:
           type: array
-          items: { $ref: "#/components/schemas/User" }
+          items: { $ref: '#/components/schemas/User' }
         createdAt: { type: string, format: date-time }
     MessageSend:
       type: object
@@ -1268,7 +1268,7 @@ components:
         type: { type: string, enum: [text, image, file, emoji, link, video, audio] }
         attachments:
           type: array
-          items: { $ref: "#/components/schemas/Media" }
+          items: { $ref: '#/components/schemas/Media' }
       required: [content, type, recipientId]
     MessageEdit:
       type: object
@@ -1288,10 +1288,10 @@ components:
         avatar: { type: string }
         members:
           type: array
-          items: { $ref: "#/components/schemas/User" }
+          items: { $ref: '#/components/schemas/User' }
         admins:
           type: array
-          items: { $ref: "#/components/schemas/User" }
+          items: { $ref: '#/components/schemas/User' }
         createdAt: { type: string, format: date-time }
     GroupCreate:
       type: object
@@ -1318,8 +1318,8 @@ components:
         title: { type: string }
         description: { type: string }
         previewImage: { type: string }
-        uploadedAt: { type: string, format: date-time }       
-      required: [id, url, type, size] 
+        uploadedAt: { type: string, format: date-time }
+      required: [id, url, type, size]
     AIMessageSend:
       type: object
       properties:
