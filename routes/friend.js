@@ -3,5 +3,8 @@ const authController = require('../controllers/authController')
 const friendController = require('../controllers/friendController')
 
 router.post('/requests', authController.protect, friendController.sendFriendRequest)
+router.post('/requests/:requestId/accept', authController.protect, friendController.acceptFriendRequest)
+router.get('/requests', authController.protect, friendController.getFriendRequests)
+router.get('', authController.protect, friendController.getFriends)
 
 module.exports = router

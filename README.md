@@ -4,62 +4,65 @@
 
 ## Outline
 
-* [1 Key Features](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#key-features)
-* [2 Tech Stack / Dependencies](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#tech-stack--dependencies)
-* 3 Architecture Overview
-* [4 Data Models](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#data-models)
-* [5 API Architecture](docs/APIDesign.yaml)
-	* [5.1 REST API Design (OpenAPI)](https://github.com/KunyueXing/realtime-chat-app-server/edit/main/README.md#rest-api-design-openapi))
-	* [5.2 Controllers and Endpoint Mapping](https://github.com/KunyueXing/realtime-chat-app-server/edit/main/README.md#controllers-and-endpoint-mapping)
-	* [5.3 WebSocket Event Design](https://github.com/KunyueXing/realtime-chat-app-server/edit/main/README.md#websocket-event-design)
-* 6 Installation & Setup
-* 7 Deployment
-* [8 Usage](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#usage)
-  * [8.1 API testing instructions (Postman)](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#api-testing-instructions-postman)
-  * 8.2 How to test chat messages
-* [9 Security Notes](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#security-notes)
-* 10 Known Issues / Limitations
-  * 10.1 Features under development
-  * 10.2 Current Issues
-* 11 Acknowledgements
+- [1 Key Features](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#key-features)
+- [2 Tech Stack / Dependencies](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#tech-stack--dependencies)
+- 3 Architecture Overview
+- [4 Data Models](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#data-models)
+- [5 API Architecture](docs/APIDesign.yaml)
+  - [5.1 REST API Design (OpenAPI)](https://github.com/KunyueXing/realtime-chat-app-server/edit/main/README.md#rest-api-design-openapi))
+  - [5.2 Controllers and Endpoint Mapping](https://github.com/KunyueXing/realtime-chat-app-server/edit/main/README.md#controllers-and-endpoint-mapping)
+  - [5.3 WebSocket Event Design](https://github.com/KunyueXing/realtime-chat-app-server/edit/main/README.md#websocket-event-design)
+- 6 Installation & Setup
+- 7 Deployment
+- [8 Usage](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#usage)
+  - [8.1 API testing instructions (Postman)](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#api-testing-instructions-postman)
+  - 8.2 How to test chat messages
+- [9 Security Notes](https://github.com/KunyueXing/realtime-chat-app-server/tree/main?tab=readme-ov-file#security-notes)
+- 10 Known Issues / Limitations
+  - 10.1 Features under development
+  - 10.2 Current Issues
+- 11 Acknowledgements
 
 ## 1 Key Features
-* User authentication and authorization
-* Real-time 1:1 messaging
-* Group chat with admin roles
-* AI assistant via OpenAI
-* Audio/video call support
-* Message starring
-* Media uploads via AWS S3
+
+- User authentication and authorization
+- Real-time 1:1 messaging
+- Group chat with admin roles
+- AI assistant via OpenAI
+- Audio/video call support
+- Message starring
+- Media uploads via AWS S3
 
 ## 2 Tech Stack / Dependencies
-* Runtime & Framework:
-	* **Node.js, Express.js**
-* Database:
-  * **MongoDB** (Compass for GUI) - NoSQL database to store user profiles, chats, messages, and other structured data
-  * **Mongoose** - Object Data Modeling (ODM) for MongoDB
-  * **AWS S3** - file storage
-* Real-time Communication:
-	* **Socket.IO**
-* Authentication & Authorization:
-  * **jsonwebtoken (JWT)** – Secure token-based user authentication
-  * **cookie-parser & cookie-session** – Parse and manage cookies for session handling
-  * **bcryptjs** – Password hashing and verification
-  * **otp-generator** – Generate OTPs for verification flows (e.g., email/phone verification)
-* Email Service:
-  * **SendGrid** – Transactional email delivery for signup verification, password reset, etc.
-* Environment & Utilities:
-	* **dotenv** – Manage environment variables
-  * **cors** – Enable/disable cross-origin requests
-  * **morgan** – HTTP request logger middleware for debugging and monitoring
-  * **nodemon** – Auto-restarts server during development
-* Audio / Video Services
-* optional:
-	* **Docker, AWS EC2, Kubernetes**
+
+- Runtime & Framework:
+  - **Node.js, Express.js**
+- Database:
+  - **MongoDB** (Compass for GUI) - NoSQL database to store user profiles, chats, messages, and other structured data
+  - **Mongoose** - Object Data Modeling (ODM) for MongoDB
+  - **AWS S3** - file storage
+- Real-time Communication:
+  - **Socket.IO**
+- Authentication & Authorization:
+  - **jsonwebtoken (JWT)** – Secure token-based user authentication
+  - **cookie-parser & cookie-session** – Parse and manage cookies for session handling
+  - **bcryptjs** – Password hashing and verification
+  - **otp-generator** – Generate OTPs for verification flows (e.g., email/phone verification)
+- Email Service:
+  - **SendGrid** – Transactional email delivery for signup verification, password reset, etc.
+- Environment & Utilities:
+  - **dotenv** – Manage environment variables
+  - **cors** – Enable/disable cross-origin requests
+  - **morgan** – HTTP request logger middleware for debugging and monitoring
+  - **nodemon** – Auto-restarts server during development
+- Audio / Video Services
+- optional:
+  - **Docker, AWS EC2, Kubernetes**
 
 ## 3 Architecture Overview
 
 ## 4 Data Models
+
 This project uses **MongoDB** for storing users, groups, messages, and other structured data, and **AWS S3** for storing images, files, and attachments. Below are the main data models used in the backend. <br>
 
 Only the User and Invitation Requests data models are detailed in this section; for descriptions of other models, please refer to [docs/dataModelsDesign.md](docs/dataModelsDesign.md).
@@ -124,11 +127,13 @@ Only the User and Invitation Requests data models are detailed in this section; 
 - AI chat is modeled as a specific chat type or even a special chat per user.
 
 ---
+
 ## 5 API Architecture
 
 This section outlines how clients interact with the backend through REST APIs and real-time WebSocket connections.
 
 ### 5.1 REST API Design (OpenAPI)
+
 This backend exposes a comprehensive REST API following OpenAPI 3.0 specification standards. The API is organized around resource-based endpoints with consistent patterns for authentication, user management, messaging, and real-time communication setup.
 
 #### Key Features:
@@ -152,14 +157,17 @@ The API follows standard REST conventions while providing the necessary endpoint
 ---
 
 ### 5.2 Controllers and Endpoint Mapping
+
 This backend project is organized using modular controllers, each responsible for a distinct feature set. Below are the main controllers, their responsibilities, the API endpoints they handle, and the protocol implemented. <br>
 
 **HTTP Only** for operations:
+
 - CRUD-focused
 - Doesn't need real-time delivery
 - Request-response pattern fits perfectly
 
 Examples:
+
 ```
 // Authentication & User Management
 register, login, logout, forgotPassword, resetPassword
@@ -175,6 +183,7 @@ pinChat, unpinChat, starMessage, unstarMessage
 - reliability + immediate feedback
 
 Examples:
+
 ```
 // Messages (persist + broadcast)
 sendMessage, editMessage, deleteMessage, sendAIMessage
@@ -192,14 +201,14 @@ Only the AuthController and FriendController are detailed in this section; for d
 
 Handles user authentication, registration, and verification.
 
-| Function               | HTTP Method | Endpoint                        | Description        |    Protocol      |
-|------------------------|-------------|----------------------------------|--------------------|-------------|
-| register               | POST        | /api/v1/auth/register           | User registration      | HTTP         |
-| verifyOTP              | POST        | /api/v1/auth/verify             | Email verification      | HTTP        |
-| login                  | POST        | /api/v1/auth/login              | User login              | HTTP        |
-| logout                 | POST        | /api/v1/auth/logout             | User logout             | HTTP        |
-| forgotPassword         | POST        | /api/v1/auth/forgot-password    | Request password reset   | HTTP       |
-| resetPassword          | POST        | /api/v1/auth/reset-password     | Reset password           | HTTP       |
+| Function       | HTTP Method | Endpoint                     | Description            | Protocol |
+| -------------- | ----------- | ---------------------------- | ---------------------- | -------- |
+| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     |
+| verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     |
+| login          | POST        | /api/v1/auth/login           | User login             | HTTP     |
+| logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     |
+| forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     |
+| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     |
 
 ---
 
@@ -207,14 +216,14 @@ Handles user authentication, registration, and verification.
 
 Handles friend management and requests.
 
-| Function              | HTTP Method | Endpoint                                 | Description               |   Protocol         |
-|-----------------------|-------------|-------------------------------------------|---------------------------|------------|
-| sendFriendRequest     | POST        | /api/v1/friends/requests                  | Send friend request       |  HTTP + WebSocket |
-| acceptFriendRequest   | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request   |  HTTP + WebSocket |
-| rejectFriendRequest   | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request   |  HTTP + WebSocket |
-| listFriends           | GET         | /api/v1/friends                           | List all friends          |  HTTP         |
-| listFriendRequests    | GET         | /api/v1/friends/requests                  | List friend requests      |  HTTP         |
-| removeFriend          | DELETE      | /api/v1/friends/{friendUserId}            | Remove friend             |  HTTP + WebSocket |
+| Function            | HTTP Method | Endpoint                                    | Description           | Protocol         |
+| ------------------- | ----------- | ------------------------------------------- | --------------------- | ---------------- |
+| sendFriendRequest   | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket |
+| acceptFriendRequest | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket |
+| rejectFriendRequest | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP + WebSocket |
+| listFriends         | GET         | /api/v1/friends                             | List all friends      | HTTP             |
+| listFriendRequests  | GET         | /api/v1/friends/requests                    | List friend requests  | HTTP             |
+| removeFriend        | DELETE      | /api/v1/friends/{friendUserId}              | Remove friend         | HTTP + WebSocket |
 
 ---
 
@@ -246,18 +255,19 @@ This backend implements a comprehensive WebSocket event system using Socket.IO t
 
 The Socket.IO implementation ensures users receive instant updates while maintaining robust fallback mechanisms for reliable communication even under poor network conditions, making it ideal for production chat applications. For the detailed design, find in [docs/SocketEventDesign.md](docs/SocketEventDesign.md)
 
-
 ## 6 Installation & Setup
 
 ## 7 Deployment
 
 ## 8 Usage
 
-  ### 8.1 API testing instructions (Postman)
-  The server's REST API is tested via Postman. Below are example requests and usage instructions
-  
-  #### Authentication
-  Register a new user:
+### 8.1 API testing instructions (Postman)
+
+The server's REST API is tested via Postman. Below are example requests and usage instructions
+
+#### Authentication
+
+Register a new user:
 
 ```
 POST /api/v1/auth/register
@@ -270,7 +280,7 @@ Content-Type: application/json
 	"passwordConfirm": "xxxxxxxx"
 }
 ```
-	
+
 Login and get token:
 
 ```
@@ -298,32 +308,35 @@ Content-Type: application/json
 **Notes:**
 
 - All protected routes require an Authorization header: `Authorization: Bearer <your_token>`
-  
+
 ### 8.2 How to test chat messages
 
 ## 9 Security Notes
-* Security Headers
-    * **Helmet** -- Sets various HTTP headers to protect against well-known web vulnerabilities (e.g., clickjacking, MIME sniffing, etc.)
-* Rate Limiting & Request Control
-    * **express-rate-limit** – Throttle repeated requests to public APIs and endpoints to prevent brute-force attacks
-* Input Sanitization & XSS Protection
-    * **express-mongo-sanitize** – Prevents NoSQL injection by removing prohibited characters in MongoDB queries
-    * **xss** – Sanitizes user input to prevent Cross-site scripting (XSS) attacks
-* Cookie Security
-    * **cookie-parser** – Parses and verifies signed cookies
-    * **cookie-session** – Provides secure and efficient session management
-* CORS Configuration
-    * **cors** – Configured to allow only trusted domains and control HTTP methods and headers allowed by the server
-* Authentication & Authorization: 
-    * **JWT** -- to implement stateless and secure authentication.
-        * The token is then used to authenticate requests to protected routes and it was passed via authorization: Bearer <token> header (preferred)
-        * Token expiration: JWTs expire after a configurable period (e.g., 1 hour).
-        * Secure storage: tokens are stored in secure, HTTP-only cookies to mitigate XSS attacks.
-* HTTPS usage (optional)
-    * Deploy behind HTTPS (e.g., with a reverse proxy like NGINX or use AWS ALB/Cloudflare) for production
+
+- Security Headers
+  - **Helmet** -- Sets various HTTP headers to protect against well-known web vulnerabilities (e.g., clickjacking, MIME sniffing, etc.)
+- Rate Limiting & Request Control
+  - **express-rate-limit** – Throttle repeated requests to public APIs and endpoints to prevent brute-force attacks
+- Input Sanitization & XSS Protection
+  - **express-mongo-sanitize** – Prevents NoSQL injection by removing prohibited characters in MongoDB queries
+  - **xss** – Sanitizes user input to prevent Cross-site scripting (XSS) attacks
+- Cookie Security
+  - **cookie-parser** – Parses and verifies signed cookies
+  - **cookie-session** – Provides secure and efficient session management
+- CORS Configuration
+  - **cors** – Configured to allow only trusted domains and control HTTP methods and headers allowed by the server
+- Authentication & Authorization:
+  - **JWT** -- to implement stateless and secure authentication.
+    - The token is then used to authenticate requests to protected routes and it was passed via authorization: Bearer <token> header (preferred)
+    - Token expiration: JWTs expire after a configurable period (e.g., 1 hour).
+    - Secure storage: tokens are stored in secure, HTTP-only cookies to mitigate XSS attacks.
+- HTTPS usage (optional)
+  - Deploy behind HTTPS (e.g., with a reverse proxy like NGINX or use AWS ALB/Cloudflare) for production
 
 ## 10 Known Issues / Limitations
-  ### 10.1 Features under development
-  ### 10.2 Current Issues
-## 11 Acknowledgements
 
+### 10.1 Features under development
+
+### 10.2 Current Issues
+
+## 11 Acknowledgements
