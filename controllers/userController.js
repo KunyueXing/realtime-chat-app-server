@@ -36,56 +36,40 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 // Get all users that are not friends with the current user
 exports.getNonFriendUsers = catchAsync(async (req, res, next) => {
   // 1) Get all users
-  const all_users = await User.find({ verified: true }).select('firstName lastName _id')
+  const allUsers = await User.find({ verified: true }).select('firstName lastName _id')
 
-  const curr_user = req.user
+  //const currUser = req.user
+  const currUser = await User.findById(req.user._id).populate('friends', '_id').populate('friendRequests', 'sender receiver')
 
   // 2) Filter out the current user and friends, and those who have sent a friend request
-  const not_friends_users = all_users.filter((user) => {
+  const nonFriendsUsers = allUsers.filter((user) => {
     // Check if the user is not the current user
-    if (user._id.toString() === curr_user._id.toString()) {
+    if (user._id.toString() === currUser._id.toString()) {
       return false
     }
 
     // Check if the user is not already a friend
     // Here, .some() populated objects. If use .includes(user_.id), it's quicker but less safer
-    const isFriend = curr_user.friends.some((friend) => friend._id.toString() === user._id.toString())
+    const isFriend = currUser.friends?.some((friend) => friend?._id?.toString() === user._id.toString()) || false
     if (isFriend) {
       return false
     }
 
     // Check if the user has sent a friend request to the current user or vice versa
-    // const hasSentRequest = curr_user.friendRequests.some((request) => request.sender._id.toString() === user._id.toString() || request.receiver._id.toString() === user._id.toString())
-    // if (hasSentRequest) {
-    //   return false
-    // }
-
+    const hasSentRequest = currUser.friendRequests?.some((request) => request?.sender?.toString() === user._id.toString())
+    const hasReceivedRequest = currUser.friendRequests?.some((request) => request?.receiver?.toString() === user._id.toString())
+    if (hasSentRequest || hasReceivedRequest) {
+      return false
+    }
     return true
   })
 
-  // For testing purposes
-  // const not_friends_users = [
-  //   {
-  //     firstName: 'Jenny',
-  //     lastName: 'Li',
-  //     _id: 'sdkfjl;kdsjalkjsa;fj',
-  //     avatar: 'lksdjafklsj;dkfjsa;',
-  //     online: true
-  //   },
-  //   {
-  //     firstName: 'Ben',
-  //     lastName: 'Ma',
-  //     _id: 'sdkfjl;kdsjalsa;fj',
-  //     avatar: 'lksdjafklsj;dkfjsa;',
-  //     online: true
-  //   }
-  // ]
-  console.log('Not friends users:', not_friends_users)
+  console.log('Not friends users:', nonFriendsUsers)
 
   // 3) Send response
   res.status(200).json({
     status: 'success',
-    users: not_friends_users,
+    users: nonFriendsUsers,
     message: 'Users that are not friends fetched successfully'
   })
 })

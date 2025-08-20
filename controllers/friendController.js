@@ -18,6 +18,9 @@ exports.sendFriendRequest = catchAsync(async (req, res, next) => {
 
     // Create a new friend request
     const newRequest = await FriendRequest.create({ sender: senderId, receiver: receiverId })
+    // Add the friend request to the sender's and receiver's friendRequests array
+    await User.findByIdAndUpdate(senderId, { $addToSet: { friendRequests: newRequest._id } }, { new: true, upsert: true })
+    await User.findByIdAndUpdate(receiverId, { $addToSet: { friendRequests: newRequest._id } }, { new: true, upsert: true })
 
     res.status(201).json({
       status: 'success',
@@ -35,23 +38,6 @@ exports.sendFriendRequest = catchAsync(async (req, res, next) => {
 exports.getFriendRequests = catchAsync(async (req, res, next) => {
   const friend_requests = await FriendRequest.find({ receiver: req.user._id }).populate('sender', 'firstName lastName _id')
 
-  // For testing purposes
-  // const friend_requests = [
-  //   {
-  //     firstName: 'Jenny',
-  //     lastName: 'Li',
-  //     _id: 'sdkfjl;kdsjalkjsa;fj',
-  //     avatar: 'lksdjafklsj;dkfjsa;',
-  //     online: true
-  //   },
-  //   {
-  //     firstName: 'Ben',
-  //     lastName: 'Ma',
-  //     _id: 'sdkfjl;kdsjalsa;fj',
-  //     avatar: 'lksdjafklsj;dkfjsa;',
-  //     online: true
-  //   }
-  // ]
   console.log('friend requests:', friend_requests)
 
   res.status(200).json({
@@ -65,23 +51,6 @@ exports.getFriendRequests = catchAsync(async (req, res, next) => {
 exports.getFriends = catchAsync(async (req, res, next) => {
   const curr_user = await User.findById(req.user._id).populate('friends', 'firstName lastName _id')
 
-  // For testing purposes
-  // const friends_list = [
-  //   {
-  //     firstName: 'Jenny',
-  //     lastName: 'Li',
-  //     _id: 'sdkfjl;kdsjalkjsa;fj',
-  //     avatar: 'lksdjafklsj;dkfjsa;',
-  //     online: true
-  //   },
-  //   {
-  //     firstName: 'Ben',
-  //     lastName: 'Ma',
-  //     _id: 'sdkfjl;kdsjalsa;fj',
-  //     avatar: 'lksdjafklsj;dkfjsa;',
-  //     online: true
-  //   }
-  // ]
   console.log('friends users:', curr_user.friends)
 
   res.status(200).json({
@@ -112,6 +81,9 @@ exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
     })
     // Remove the friend request from the database
     await FriendRequest.findByIdAndDelete(requestId)
+    // Remove the friend request from the sender's and receiver's friendRequests array
+    await User.findByIdAndUpdate(friendRequest.sender, { $pull: { friendRequests: requestId } })
+    await User.findByIdAndUpdate(friendRequest.receiver, { $pull: { friendRequests: requestId } })
 
     res.status(200).json({
       status: 'success',
@@ -125,6 +97,37 @@ exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
     res.status(500).json({
       status: 'error',
       message: 'An error occurred while accepting the friend request'
+    })
+  }
+})
+
+exports.rejectFriendRequest = catchAsync(async (req, res, next) => {
+  const { requestId } = req.body
+
+  try {
+    // Find the friend request
+    const friendRequest = await FriendRequest.findById(requestId)
+    if (!friendRequest) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Friend request not found'
+      })
+    }
+    // Remove the friend request from the database
+    await FriendRequest.findByIdAndDelete(requestId)
+    // Remove the friend request from the sender's and receiver's friendRequests array
+    await User.findByIdAndUpdate(friendRequest.sender, { $pull: { friendRequests: requestId } })
+    await User.findByIdAndUpdate(friendRequest.receiver, { $pull: { friendRequests: requestId } })
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Friend request rejected successfully'
+    })
+  } catch (error) {
+    console.error('Error rejecting friend request:', error)
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while rejecting the friend request'
     })
   }
 })
