@@ -17,13 +17,13 @@ module.exports = async (socket, io) => {
       console.error('Error receiving friend request:', error)
     }
 
-    try {
-      io.to(sender?.socketId).emit('friend_request_sent', {
-        message: 'You have sent a friend request'
-      })
-    } catch (error) {
-      console.error('Error sending friend request:', error)
-    }
+    // try {
+    //   io.to(sender?.socketId).emit('friend_request_sent', {
+    //     message: 'You have sent a friend request'
+    //   })
+    // } catch (error) {
+    //   console.error('Error sending friend request:', error)
+    // }
   })
 
   socket.on('accept_friend_request', async (data) => {
@@ -42,12 +42,12 @@ module.exports = async (socket, io) => {
     } catch (error) {
       console.error('Error sending friend request accepted to friend request sender:', error)
     }
-    try {
-      io.to(receiver?.socketId).emit('friend_request_accepted', {
-        message: 'You have accepted the friend request'
-      })
-    } catch (error) {
-      console.error('Error sending friend request accepted to friend request receiver:', error)
-    }
+    // try {
+    //   io.to(receiver?.socketId).emit('friend_request_accepted', {
+    //     message: 'You have accepted the friend request'
+    //   })
+    // } catch (error) {
+    //   console.error('Error sending friend request accepted to friend request receiver:', error)
+    // }
   })
 }
