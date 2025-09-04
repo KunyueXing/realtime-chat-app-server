@@ -69,7 +69,9 @@ exports.getNonFriendUsers = catchAsync(async (req, res, next) => {
   // 3) Send response
   res.status(200).json({
     status: 'success',
-    users: nonFriendsUsers,
+    data: {
+      users: nonFriendsUsers
+    },
     message: 'Users that are not friends fetched successfully'
   })
 })
