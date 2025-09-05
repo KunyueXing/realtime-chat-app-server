@@ -14,17 +14,12 @@ Socket events are structured to support both one-to-one and group interactions, 
 
 #### Friend Requests
 
-| Event Name              | Emitter | Receiver | Payload                         | Description                 |
-| ----------------------- | ------- | -------- | ------------------------------- | --------------------------- |
-| send_friend_request     | Client  | Server   | { senderId, receiverId}         | Send friend request         |
-| friend_request_sent     | Server  | Client   | { success, request, message }   | Result of sending request   |
-| new_friend_request      | Server  | Client   | { request, message }            | Notify new friend request   |
-| accept_friend_request   | Client  | Server   | { requestId }                   | Accept friend request       |
-| friend_request_accepted | Server  | Client   | { success, requestId, message } | Result of accepting request |
-| reject_friend_request   | Client  | Server   | { requestId }                   | Reject friend request       |
-| friend_request_rejected | Server  | Client   | { success, message }            | Result of rejecting request |
-| remove_friend           | Client  | Server   | { friendId }                    | Remove friend               |
-| friend_removed          | Server  | Client   | { success, message }            | Result of removing friend   |
+| Event Name                | Emitter | Receiver | Payload                                                          | Description                 |
+| ------------------------- | ------- | -------- | ---------------------------------------------------------------- | --------------------------- |
+| `send_friend_request`     | Client  | Server   | `{ senderId: string, receiverId: string, friendRequest: object}` | Send friend request         |
+| `new_friend_request`      | Server  | Client   | `{ friendRequest: object, senderId: string }`                    | Notify new friend request   |
+| `accept_friend_request`   | Client  | Server   | `{ acceptedBy: string, requestSender: string }`                  | Accept friend request       |
+| `friend_request_accepted` | Server  | Client   | `{ friend: object  }`                                            | Result of accepting request |
 
 ---
 

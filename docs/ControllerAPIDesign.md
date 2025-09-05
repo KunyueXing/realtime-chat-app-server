@@ -8,14 +8,14 @@ This backend project is organized using modular controllers, each responsible fo
 
 Handles user authentication, registration, and verification.
 
-| Function       | HTTP Method | Endpoint                     | Description            | Protocol |
-| -------------- | ----------- | ---------------------------- | ---------------------- | -------- |
-| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     |
-| verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     |
-| login          | POST        | /api/v1/auth/login           | User login             | HTTP     |
-| logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     |
-| forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     |
-| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     |
+| Function       | HTTP Method | Endpoint                     | Description            | Protocol | Request Body                         |
+| -------------- | ----------- | ---------------------------- | ---------------------- | -------- | ------------------------------------ |
+| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     | `{email: string, password: string}`  |
+| verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     | `{otp: string, email: string}`       |
+| login          | POST        | /api/v1/auth/login           | User login             | HTTP     | `{email: string, password: string}}` |
+| logout         | None        | None                         | None                   | None     | None                                 |
+| forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     | `{email: string}`                    |
+| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     | `{password: string}`                 |
 
 ---
 
@@ -23,13 +23,12 @@ Handles user authentication, registration, and verification.
 
 Manages user profiles and user settings.
 
-| Function       | HTTP Method | Endpoint                  | Description                                                | Protocol |
-| -------------- | ----------- | ------------------------- | ---------------------------------------------------------- | -------- |
-| getProfile     | GET         | /api/v1/users/me          | Get current user profile                                   | HTTP     |
-| updateProfile  | PATCH       | /api/v1/users/me          | Update current user profile                                | HTTP     |
-| searchUsers    | GET         | /api/v1/users/search      | Search for users                                           | HTTP     |
-| getUserById    | GET         | /api/v1/users/{userId}    | Get other users' profile data by ID                        | HTTP     |
-| listNonFriends | GET         | /api/v1/users/non-friends | List users who are not friends with the authenticated user | HTTP     |
+| Function       | HTTP Method | Endpoint                       | Description                                                | Protocol |
+| -------------- | ----------- | ------------------------------ | ---------------------------------------------------------- | -------- |
+| updateProfile  | PATCH       | /api/v1/users/profile/{userId} | Update current user profile                                | HTTP     |
+| searchUsers    | GET         | /api/v1/users/search           | Search for users                                           | HTTP     |
+| getProfileById | GET         | /api/v1/users/profile/{userId} | Get users' profile data by ID                              | HTTP     |
+| listNonFriends | GET         | /api/v1/users/non-friends      | List users who are not friends with the authenticated user | HTTP     |
 
 ---
 
@@ -37,14 +36,20 @@ Manages user profiles and user settings.
 
 Handles friend management and requests.
 
-| Function            | HTTP Method | Endpoint                                    | Description           | Protocol         |
-| ------------------- | ----------- | ------------------------------------------- | --------------------- | ---------------- |
-| sendFriendRequest   | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket |
-| acceptFriendRequest | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket |
-| rejectFriendRequest | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP + WebSocket |
-| listFriends         | GET         | /api/v1/friends                             | List all friends      | HTTP             |
-| listFriendRequests  | GET         | /api/v1/friends/requests                    | List friend requests  | HTTP             |
-| removeFriend        | DELETE      | /api/v1/friends/{friendUserId}              | Remove friend         | HTTP + WebSocket |
+| Function                                 | HTTP Method | Endpoint                                    | Description           | Protocol         | HTTP Request Body |
+| ---------------------------------------- | ----------- | ------------------------------------------- | --------------------- | ---------------- | ----------------- |
+| sendFriendRequest                        | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket |
+| `{receiverId: string, senderId: string}` |
+| acceptFriendRequest                      | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket |
+| `{requestId: string, userId: string}`    |
+| rejectFriendRequest                      | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP             |
+| `{requestId: string, userId: string}`    |
+| listFriends                              | GET         | /api/v1/friends                             | List all friends      | HTTP             |
+| None                                     |
+| listFriendRequests                       | GET         | /api/v1/friends/requests                    | List friend requests  | HTTP             |
+| None                                     |
+| removeFriend                             | DELETE      | /api/v1/friends/{friendUserId}              | Remove friend         | HTTP             |
+| `{userId: string, friendId: string}`     |
 
 ---
 
