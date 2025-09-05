@@ -13,9 +13,9 @@ Handles user authentication, registration, and verification.
 | register       | POST        | /api/v1/auth/register        | User registration      | HTTP     | `{email: string, password: string}`  |
 | verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     | `{otp: string, email: string}`       |
 | login          | POST        | /api/v1/auth/login           | User login             | HTTP     | `{email: string, password: string}}` |
-| logout         | None        | None                         | None                   | None     | None                                 |
+| logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     | `{userId: string}`                   |
 | forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     | `{email: string}`                    |
-| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     | `{password: string}`                 |
+| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     | `{newPassword: string}`              |
 
 ---
 
@@ -36,20 +36,14 @@ Manages user profiles and user settings.
 
 Handles friend management and requests.
 
-| Function                                 | HTTP Method | Endpoint                                    | Description           | Protocol         | HTTP Request Body |
-| ---------------------------------------- | ----------- | ------------------------------------------- | --------------------- | ---------------- | ----------------- |
-| sendFriendRequest                        | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket |
-| `{receiverId: string, senderId: string}` |
-| acceptFriendRequest                      | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket |
-| `{requestId: string, userId: string}`    |
-| rejectFriendRequest                      | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP             |
-| `{requestId: string, userId: string}`    |
-| listFriends                              | GET         | /api/v1/friends                             | List all friends      | HTTP             |
-| None                                     |
-| listFriendRequests                       | GET         | /api/v1/friends/requests                    | List friend requests  | HTTP             |
-| None                                     |
-| removeFriend                             | DELETE      | /api/v1/friends/{friendUserId}              | Remove friend         | HTTP             |
-| `{userId: string, friendId: string}`     |
+| Function            | HTTP Method | Endpoint                                    | Description           | Protocol         | HTTP Request Body                        |
+| --------------------| ----------- | ------------------------------------------- | --------------------- | ---------------- | ---------------------------------------- |
+| sendFriendRequest   | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket | `{receiverId: string, senderId: string}` |
+| acceptFriendRequest | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket | `{requestId: string, userId: string}`    |
+| rejectFriendRequest | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP             | `{requestId: string, userId: string}`    |
+| listFriends         | GET         | /api/v1/friends                             | List all friends      | HTTP             | None                                     |
+| listFriendRequests  | GET         | /api/v1/friends/requests                    | List friend requests  | HTTP             | None                                     |
+| removeFriend        | DELETE      | /api/v1/friends/{friendUserId}              | Remove friend         | HTTP             | `{userId: string, friendId: string}`     |
 
 ---
 
