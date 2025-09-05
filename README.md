@@ -201,14 +201,14 @@ Only the AuthController and FriendController are detailed in this section; for d
 
 Handles user authentication, registration, and verification.
 
-| Function       | HTTP Method | Endpoint                     | Description            | Protocol |
-| -------------- | ----------- | ---------------------------- | ---------------------- | -------- |
-| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     |
-| verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     |
-| login          | POST        | /api/v1/auth/login           | User login             | HTTP     |
-| logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     |
-| forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     |
-| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     |
+| Function       | HTTP Method | Endpoint                     | Description            | Protocol | Request Body                         |
+| -------------- | ----------- | ---------------------------- | ---------------------- | -------- | ------------------------------------ |
+| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     | `{email: string, password: string}`  |
+| verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     | `{otp: string, email: string}`       |
+| login          | POST        | /api/v1/auth/login           | User login             | HTTP     | `{email: string, password: string}}` |
+| logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     | `{userId: string}`                   |
+| forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     | `{email: string}`                    |
+| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     | `{newPassword: string}`              |
 
 ---
 
@@ -216,14 +216,14 @@ Handles user authentication, registration, and verification.
 
 Handles friend management and requests.
 
-| Function            | HTTP Method | Endpoint                                    | Description           | Protocol         |
-| ------------------- | ----------- | ------------------------------------------- | --------------------- | ---------------- |
-| sendFriendRequest   | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket |
-| acceptFriendRequest | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket |
-| rejectFriendRequest | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP + WebSocket |
-| listFriends         | GET         | /api/v1/friends                             | List all friends      | HTTP             |
-| listFriendRequests  | GET         | /api/v1/friends/requests                    | List friend requests  | HTTP             |
-| removeFriend        | DELETE      | /api/v1/friends/{friendUserId}              | Remove friend         | HTTP + WebSocket |
+| Function            | HTTP Method | Endpoint                                    | Description           | Protocol         | HTTP Request Body                        |
+| --------------------| ----------- | ------------------------------------------- | --------------------- | ---------------- | ---------------------------------------- |
+| sendFriendRequest   | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket | `{receiverId: string, senderId: string}` |
+| acceptFriendRequest | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket | `{requestId: string, userId: string}`    |
+| rejectFriendRequest | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP             | `{requestId: string, userId: string}`    |
+| listFriends         | GET         | /api/v1/friends                             | List all friends      | HTTP             | None                                     |
+| listFriendRequests  | GET         | /api/v1/friends/requests                    | List friend requests  | HTTP             | None                                     |
+| removeFriend        | DELETE      | /api/v1/friends/{friendUserId}              | Remove friend         | HTTP             | `{userId: string, friendId: string}`     |
 
 ---
 
@@ -253,7 +253,18 @@ This backend implements a comprehensive WebSocket event system using Socket.IO t
 - Scalable Design - Room-based event routing to minimize unnecessary broadcasts and server load
 - Security Integration - JWT token validation for Socket.IO connections with user authorization
 
-The Socket.IO implementation ensures users receive instant updates while maintaining robust fallback mechanisms for reliable communication even under poor network conditions, making it ideal for production chat applications. For the detailed design, find in [docs/SocketEventDesign.md](docs/SocketEventDesign.md)
+Socket events to handle friend requests are listed here. For the rest detailed design, find in [docs/SocketEventDesign.md](docs/SocketEventDesign.md)
+
+#### Friend Requests
+
+| Event Name                | Emitter | Receiver | Payload                                                          | Description                 |
+| ------------------------- | ------- | -------- | ---------------------------------------------------------------- | --------------------------- |
+| `send_friend_request`     | Client  | Server   | `{ senderId: string, receiverId: string, friendRequest: object}` | Send friend request         |
+| `new_friend_request`      | Server  | Client   | `{ friendRequest: object, senderId: string }`                    | Notify new friend request   |
+| `accept_friend_request`   | Client  | Server   | `{ acceptedBy: string, requestSender: string }`                  | Accept friend request       |
+| `friend_request_accepted` | Server  | Client   | `{ friend: object  }`                                            | Result of accepting request |
+
+---
 
 ## 6 Installation & Setup
 
