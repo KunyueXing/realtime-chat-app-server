@@ -10,7 +10,7 @@ Handles user authentication, registration, and verification.
 
 | Function       | HTTP Method | Endpoint                     | Description            | Protocol | Request Body                         |
 | -------------- | ----------- | ---------------------------- | ---------------------- | -------- | ------------------------------------ |
-| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     | `{email: string, password: string}`  |
+| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     | `{email: string, password: string, lastName: string, firstName: string}`  |
 | verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     | `{otp: string, email: string}`       |
 | login          | POST        | /api/v1/auth/login           | User login             | HTTP     | `{email: string, password: string}}` |
 | logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     | `{userId: string}`                   |
