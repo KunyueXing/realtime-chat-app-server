@@ -201,14 +201,14 @@ Only the AuthController and FriendController are detailed in this section; for d
 
 Handles user authentication, registration, and verification.
 
-| Function       | HTTP Method | Endpoint                     | Description            | Protocol | Request Body                         |
-| -------------- | ----------- | ---------------------------- | ---------------------- | -------- | ------------------------------------ |
-| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     | `{email: string, password: string, lastName: string, firstName: string}`  |
-| verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     | `{otp: string, email: string}`       |
-| login          | POST        | /api/v1/auth/login           | User login             | HTTP     | `{email: string, password: string}}` |
-| logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     | `{userId: string}`                   |
-| forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     | `{email: string}`                    |
-| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     | `{newPassword: string}`              |
+| Function       | HTTP Method | Endpoint                     | Description            | Protocol | Request Body                                                             |
+| -------------- | ----------- | ---------------------------- | ---------------------- | -------- | ------------------------------------------------------------------------ |
+| register       | POST        | /api/v1/auth/register        | User registration      | HTTP     | `{email: string, password: string, lastName: string, firstName: string}` |
+| verifyOTP      | POST        | /api/v1/auth/verify          | Email verification     | HTTP     | `{otp: string, email: string}`                                           |
+| login          | POST        | /api/v1/auth/login           | User login             | HTTP     | `{email: string, password: string}}`                                     |
+| logout         | POST        | /api/v1/auth/logout          | User logout            | HTTP     | `{userId: string}`                                                       |
+| forgotPassword | POST        | /api/v1/auth/forgot-password | Request password reset | HTTP     | `{email: string}`                                                        |
+| resetPassword  | POST        | /api/v1/auth/reset-password  | Reset password         | HTTP     | `{newPassword: string}`                                                  |
 
 ---
 
@@ -217,7 +217,7 @@ Handles user authentication, registration, and verification.
 Handles friend management and requests.
 
 | Function            | HTTP Method | Endpoint                                    | Description           | Protocol         | HTTP Request Body                        |
-| --------------------| ----------- | ------------------------------------------- | --------------------- | ---------------- | ---------------------------------------- |
+| ------------------- | ----------- | ------------------------------------------- | --------------------- | ---------------- | ---------------------------------------- |
 | sendFriendRequest   | POST        | /api/v1/friends/requests                    | Send friend request   | HTTP + WebSocket | `{receiverId: string, senderId: string}` |
 | acceptFriendRequest | POST        | /api/v1/friends/requests/{requestId}/accept | Accept friend request | HTTP + WebSocket | `{requestId: string, userId: string}`    |
 | rejectFriendRequest | POST        | /api/v1/friends/requests/{requestId}/reject | Reject friend request | HTTP             | `{requestId: string, userId: string}`    |

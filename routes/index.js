@@ -4,8 +4,8 @@ const authRouter = require('./auth')
 const userRouter = require('./user')
 const friendRouter = require('./friend')
 
-router.use('/auth', authRouter)
-router.use('/user', userRouter)
-router.use('/friends', friendRouter)
+router.use('/api/v1/auth', authRouter)
+router.use('/api/v1/user', userRouter)
+router.use('/api/v1/friends', friendRouter)
 
 module.exports = router
